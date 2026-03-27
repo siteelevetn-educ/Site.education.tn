@@ -151,7 +151,7 @@
         
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin-top: 30px;
         }
@@ -170,13 +170,14 @@
         
         .resource-icon {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             color: white;
+            cursor: pointer;
         }
         
         .resource-icon i {
-            font-size: 48px;
+            font-size: 40px;
         }
         
         .resource-content {
@@ -188,28 +189,38 @@
             font-weight: 700;
             margin-bottom: 10px;
             color: #2c3e50;
+            text-align: center;
         }
         
-        .resource-desc {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-bottom: 15px;
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+            padding-top: 10px;
         }
         
-        .resource-btn {
-            background: #f0f2f5;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
+        .file-item {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             cursor: pointer;
-            transition: 0.3s;
-            width: 100%;
-            font-family: 'Tajawal', sans-serif;
+            transition: 0.2s;
         }
         
-        .resource-btn:hover {
-            background: #667eea;
-            color: white;
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .file-name {
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .download-icon {
+            color: #667eea;
         }
         
         .back-btn {
@@ -241,12 +252,28 @@
             .level-title { font-size: 22px; }
             .grades-grid { grid-template-columns: repeat(2, 1fr); }
         }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+        }
+        
+        .folder-card {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">📚 منصة تعليمية</div>
+            <div class="logo">📚 منصة تعليمية - تونس</div>
             <ul class="nav-links">
                 <li><a onclick="showHome()">الرئيسية</a></li>
                 <li><a onclick="showHome()">الموارد</a></li>
@@ -265,31 +292,31 @@
         <div class="level-card">
             <h2 class="level-title">🏫 التعليم الابتدائي</h2>
             <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('primary', 'السنة الأولى ابتدائي')">السنة الأولى</button>
-                <button class="grade-btn" onclick="showSubjects('primary', 'السنة الثانية ابتدائي')">السنة الثانية</button>
-                <button class="grade-btn" onclick="showSubjects('primary', 'السنة الثالثة ابتدائي')">السنة الثالثة</button>
-                <button class="grade-btn" onclick="showSubjects('primary', 'السنة الرابعة ابتدائي')">السنة الرابعة</button>
-                <button class="grade-btn" onclick="showSubjects('primary', 'السنة الخامسة ابتدائي')">السنة الخامسة</button>
-                <button class="grade-btn" onclick="showSubjects('primary', 'السنة السادسة ابتدائي')">السنة السادسة</button>
+                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button>
+                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button>
+                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button>
+                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button>
+                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button>
+                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button>
             </div>
         </div>
         
         <div class="level-card">
             <h2 class="level-title">📖 التعليم الإعدادي</h2>
             <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('middle', 'السنة السابعة أساسي')">السنة السابعة أساسي</button>
-                <button class="grade-btn" onclick="showSubjects('middle', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button>
-                <button class="grade-btn" onclick="showSubjects('middle', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button>
+                <button class="grade-btn" onclick="showSubjects('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button>
+                <button class="grade-btn" onclick="showSubjects('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button>
+                <button class="grade-btn" onclick="showSubjects('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button>
             </div>
         </div>
         
         <div class="level-card">
             <h2 class="level-title">🎓 التعليم الثانوي</h2>
             <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('secondary', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button>
-                <button class="grade-btn" onclick="showSubjects('secondary', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button>
-                <button class="grade-btn" onclick="showSubjects('secondary', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button>
-                <button class="grade-btn" onclick="showSubjects('secondary', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button>
+                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button>
+                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button>
+                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button>
+                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button>
             </div>
         </div>
 
@@ -314,15 +341,28 @@
         </div>
     </section>
 
-    <!-- قسم الموارد -->
-    <section class="resources-section" id="resourcesSection">
+    <!-- قسم المجلدات (cours, devoirs, examens, videos) -->
+    <section class="resources-section" id="foldersSection">
         <div class="level-card">
-            <h2 class="level-title" id="selectedResourceTitle">الموارد التعليمية</h2>
-            <div class="resources-grid" id="resourcesGrid">
-                <!-- سيتم تعبئتها بالموارد -->
+            <h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2>
+            <div class="resources-grid" id="foldersGrid">
+                <!-- سيتم تعبئتها بأنواع الموارد -->
             </div>
             <div class="back-btn">
-                <button onclick="backToSubjects()">← العودة إلى المواد</button>
+                <button onclick="backToSubjectsFromFolders()">← العودة إلى المواد</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم عرض الملفات -->
+    <section class="resources-section" id="filesSection">
+        <div class="level-card">
+            <h2 class="level-title" id="selectedFilesTitle">الملفات</h2>
+            <div id="filesList" class="file-list">
+                <!-- سيتم تعبئتها بالملفات -->
+            </div>
+            <div class="back-btn">
+                <button onclick="backToFolders()">← العودة إلى أنواع الموارد</button>
             </div>
         </div>
     </section>
@@ -335,34 +375,80 @@
     <script>
         let currentLevel = '';
         let currentGradeName = '';
+        let currentSubject = '';
+        let currentSubjectFolder = '';
         let currentSubjects = [];
         
-        // تعريف المواد حسب المستوى
+        // تعريف المواد حسب المستوى (مع إضافة الإقتصاد والتصرف للمستويات المناسبة)
         const subjectsData = {
-            primary: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
-            middle: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
-            secondary: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'],
+            primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
+            college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
             national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique']
         };
         
-        // تعريف الموارد حسب المستوى
-        const resourcesData = {
-            primary: ['دروس', 'فروض', 'اختبارات متعددة الإحتمالات', 'فيديوهات تعليمية'],
-            middle: ['دروس', 'فروض', 'اختبارات متعددة الإحتمالات', 'فيديوهات تعليمية'],
-            secondary: ['دروس', 'فروض', 'اختبارات متعددة الإحتمالات', 'فيديوهات تعليمية'],
-            national: ['إمتحانات', 'اختبارات متعددة الإحتمالات (Qcm)']
+        // المواد حسب مستوى الثانوي (كل مستوى له مواد مختلفة)
+        const lyceeSubjects = {
+            'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'],
+            'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
+            'السنة الثالثة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
+            'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف']
+        };
+        
+        // أنواع الموارد (المجلدات)
+        const resourceFolders = ['cours', 'devoirs', 'examens', 'videos'];
+        
+        // ترجمة أسماء المواد إلى أسماء المجلدات (بالإنجليزية أو الفرنسية للروابط)
+        const folderNames = {
+            'اللغة العربية': 'arabe',
+            'الفرنسية': 'francais',
+            'الأنكليزية': 'anglais',
+            'الرياضيات': 'maths',
+            'إيقاظ علمي': 'eveil',
+            'الفيزياء': 'physique',
+            'العلوم الطبيعية': 'sciences',
+            'التكنولوجيا': 'technologie',
+            'français': 'francais',
+            'english': 'anglais',
+            'maths': 'maths',
+            'physique': 'physique',
+            'technique': 'technique',
+            'informatique': 'informatique',
+            'الإقتصاد والتصرف': 'economie'
+        };
+        
+        // ترجمة أنواع الموارد إلى أسماء عربية للعرض
+        const folderNamesAr = {
+            'cours': '📚 دروس',
+            'devoirs': '📝 فروض',
+            'examens': '📋 اختبارات',
+            'videos': '🎥 فيديوهات تعليمية'
+        };
+        
+        // أيقونات المجلدات
+        const folderIcons = {
+            'cours': 'fa-book',
+            'devoirs': 'fa-pencil-alt',
+            'examens': 'fa-file-alt',
+            'videos': 'fa-video'
         };
         
         function showHome() {
             document.getElementById('levelsSection').style.display = 'block';
             document.getElementById('subjectsSection').classList.remove('active');
-            document.getElementById('resourcesSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
         }
         
         function showSubjects(level, gradeName) {
             currentLevel = level;
             currentGradeName = gradeName;
-            currentSubjects = subjectsData[level];
+            
+            // تحديد المواد حسب المستوى
+            if (level === 'lycee') {
+                currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
+            } else {
+                currentSubjects = subjectsData[level];
+            }
             
             document.getElementById('selectedLevelTitle').innerHTML = `📚 المواد التعليمية - ${gradeName}`;
             
@@ -374,68 +460,110 @@
                 card.className = 'grade-btn';
                 card.style.width = '100%';
                 card.textContent = subject;
-                card.onclick = () => showResources(subject);
+                card.onclick = () => showFolders(subject);
                 grid.appendChild(card);
             });
             
             document.getElementById('levelsSection').style.display = 'none';
             document.getElementById('subjectsSection').classList.add('active');
-            document.getElementById('resourcesSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
         }
         
-        function showResources(subject) {
-            const resources = resourcesData[currentLevel];
+        function showFolders(subject) {
+            currentSubject = subject;
+            currentSubjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
             
-            document.getElementById('selectedResourceTitle').innerHTML = `📖 ${subject} - ${currentGradeName}`;
+            document.getElementById('selectedFolderTitle').innerHTML = `📁 ${subject} - ${currentGradeName}`;
             
-            const grid = document.getElementById('resourcesGrid');
+            const grid = document.getElementById('foldersGrid');
             grid.innerHTML = '';
             
-            resources.forEach(resourceType => {
+            resourceFolders.forEach(folder => {
                 const card = document.createElement('div');
-                card.className = 'resource-card';
-                
-                let icon = '';
-                if (resourceType.includes('دروس')) icon = 'fa-book';
-                else if (resourceType.includes('فروض')) icon = 'fa-file-pdf';
-                else if (resourceType.includes('اختبارات')) icon = 'fa-pencil';
-                else if (resourceType.includes('فيديوهات')) icon = 'fa-video';
-                else if (resourceType.includes('إمتحانات')) icon = 'fa-graduation-cap';
-                else if (resourceType.includes('Qcm')) icon = 'fa-question-circle';
-                else icon = 'fa-download';
-                
+                card.className = 'resource-card folder-card';
+                card.onclick = () => showFiles(folder);
                 card.innerHTML = `
                     <div class="resource-icon">
-                        <i class="fas ${icon}"></i>
+                        <i class="fas ${folderIcons[folder]}"></i>
                     </div>
                     <div class="resource-content">
-                        <div class="resource-title">${subject} - ${resourceType}</div>
-                        <div class="resource-desc">${resourceType} لطلاب ${currentGradeName}</div>
-                        <button class="resource-btn" onclick="openResource('${subject}', '${resourceType}')">
-                            <i class="fas fa-download"></i> تحميل / مشاهدة
-                        </button>
+                        <div class="resource-title">${folderNamesAr[folder]}</div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
             
             document.getElementById('subjectsSection').classList.remove('active');
-            document.getElementById('resourcesSection').classList.add('active');
+            document.getElementById('foldersSection').classList.add('active');
+            document.getElementById('filesSection').classList.remove('active');
         }
         
-        function openResource(subject, resourceType) {
-            alert(`📥 جاري تحميل ${resourceType} لمادة ${subject}\n\nسيتم إضافة المحتوى قريباً إن شاء الله`);
+        async function showFiles(folderType) {
+            document.getElementById('selectedFilesTitle').innerHTML = `📄 ${folderNamesAr[folderType]} - ${currentSubject}`;
+            
+            const filesListDiv = document.getElementById('filesList');
+            filesListDiv.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات...</div>';
+            
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.add('active');
+            
+            // بناء رابط مجلد الملفات على GitHub
+            const folderPath = `fichiers/${currentLevel}/${currentSubjectFolder}/${folderType}/`;
+            const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
+            
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (response.ok && Array.isArray(data)) {
+                    const pdfFiles = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.PDF'));
+                    
+                    if (pdfFiles.length === 0) {
+                        filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
+                        return;
+                    }
+                    
+                    filesListDiv.innerHTML = '';
+                    pdfFiles.forEach(file => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        fileItem.onclick = () => openFile(file.download_url);
+                        fileItem.innerHTML = `
+                            <span class="file-name">📄 ${file.name}</span>
+                            <i class="fas fa-download download-icon"></i>
+                        `;
+                        filesListDiv.appendChild(fileItem);
+                    });
+                } else {
+                    filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading files:', error);
+                filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>';
+            }
+        }
+        
+        function openFile(fileUrl) {
+            window.open(fileUrl, '_blank');
         }
         
         function backToLevels() {
             document.getElementById('levelsSection').style.display = 'block';
             document.getElementById('subjectsSection').classList.remove('active');
-            document.getElementById('resourcesSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
         }
         
-        function backToSubjects() {
+        function backToSubjectsFromFolders() {
             document.getElementById('subjectsSection').classList.add('active');
-            document.getElementById('resourcesSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
+        }
+        
+        function backToFolders() {
+            document.getElementById('foldersSection').classList.add('active');
+            document.getElementById('filesSection').classList.remove('active');
         }
     </script>
 </body>
