@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة تعليمية - موارد تعليمية مجانية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+        
+        /* شريط التنقل */
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        /* القسم الرئيسي */
+        .hero {
+            padding: 120px 20px 60px;
+            text-align: center;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* مستويات التعليم */
+        .levels-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .level-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .level-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .level-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+        
+        .grades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .grade-btn {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .grade-btn:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* الموارد */
+        .resources-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: none;
+        }
+        
+        .resources-section.active {
+            display: block;
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .resource-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .resource-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .resource-icon i {
+            font-size: 48px;
+        }
+        
+        .resource-content {
+            padding: 20px;
+        }
+        
+        .resource-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .resource-desc {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .resource-btn {
+            background: #f0f2f5;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .resource-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* الفيديو */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* الفوتر */
+        .footer {
+            background: #1a2632;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .level-title { font-size: 22px; }
+            .grades-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">📚 منصة تعليمية</div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showHome()">الرئيسية</a></li>
+                <li><a href="#" onclick="showResources()">الموارد</a></li>
+                <li><a href="#">تواصل معنا</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- القسم الرئيسي -->
+    <section class="hero">
+        <h1>منصة تعليمية متكاملة</h1>
+        <p>دروس، فروض، تمارين تفاعلية، وفيديوهات تعليمية لجميع المستويات</p>
+    </section>
+    
+    <!-- مستويات التعليم -->
+    <section class="levels-section" id="levelsSection">
+        <div class="level-card">
+            <h2 class="level-title">🏫 التعليم الابتدائي</h2>
+            <div class="grades-grid">
+                <button class="grade-btn" onclick="showResourcesByGrade('primary', 1)">السنة الأولى</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('primary', 2)">السنة الثانية</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('primary', 3)">السنة الثالثة</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('primary', 4)">السنة الرابعة</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('primary', 5)">السنة الخامسة</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('primary', 6)">السنة السادسة</button>
+            </div>
+        </div>
+        
+        <div class="level-card">
+            <h2 class="level-title">📖 التعليم الإعدادي</h2>
+            <div class="grades-grid">
+                <button class="grade-btn" onclick="showResourcesByGrade('middle', 7)">السنة السابعة أساسي</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('middle', 8)">السنة الثامنة أساسي</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('middle', 9)">السنة التاسعة أساسي</button>
+            </div>
+        </div>
+        
+        <div class="level-card">
+            <h2 class="level-title">🎓 التعليم الثانوي</h2>
+            <div class="grades-grid">
+                <button class="grade-btn" onclick="showResourcesByGrade('secondary', 10)">السنة الأولى ثانوي</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('secondary', 11)">السنة الثانية ثانوي</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('secondary', 12)">السنة الثالثة ثانوي</button>
+                <button class="grade-btn" onclick="showResourcesByGrade('secondary', 13)">السنة الرابعة ثانوي</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم الموارد -->
+    <section class="resources-section" id="resourcesSection">
+        <div class="level-card">
+            <h2 class="level-title" id="selectedGradeTitle">الموارد التعليمية</h2>
+            
+            <div class="resources-grid" id="resourcesGrid">
+                <!-- سيتم تعبئتها بالـ JavaScript -->
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="grade-btn" onclick="backToLevels()" style="background: #e74c3c; color: white;">← العودة إلى المستويات</button>
+        </div>
+    </section>
+    
+    <!-- الفوتر -->
+    <footer class="footer">
+        <p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p>
+        <p style="margin-top: 10px; font-size: 12px;">منصة تعليمية مجانية للجميع</p>
+    </footer>
+    
+    <script>
+        let currentLevel = '';
+        let currentGrade = 0;
+        
+        // بيانات الموارد التعليمية
+        const resources = {
+            primary: {
+                1: {
+                    subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية'],
+                    resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات']
+                },
+                2: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات'] },
+                3: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات'] },
+                4: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم', 'التاريخ'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات'] },
+                5: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم', 'التاريخ', 'الجغرافيا'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات'] },
+                6: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم', 'التاريخ', 'الجغرافيا', 'الانقليزية'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات'] }
+            },
+            middle: {
+                7: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم', 'التاريخ', 'الجغرافيا', 'الانقليزية', 'الإعلامية'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] },
+                8: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم', 'التاريخ', 'الجغرافيا', 'الانقليزية', 'الإعلامية', 'الفيزياء'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] },
+                9: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'العلوم', 'التاريخ', 'الجغرافيا', 'الانقليزية', 'الإعلامية', 'الفيزياء', 'الرياضة'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] }
+            },
+            secondary: {
+                10: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'الانقليزية', 'الفيزياء', 'العلوم', 'التاريخ', 'الجغرافيا', 'الفلسفة'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] },
+                11: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'الانقليزية', 'الفيزياء', 'العلوم', 'التاريخ', 'الجغرافيا', 'الفلسفة', 'الرياضة'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] },
+                12: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'الانقليزية', 'الفيزياء', 'العلوم', 'التاريخ', 'الجغرافيا', 'الفلسفة', 'الاقتصاد'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] },
+                13: { subjects: ['اللغة العربية', 'الرياضيات', 'التربية الإسلامية', 'الفرنسية', 'الانقليزية', 'الفيزياء', 'العلوم', 'التاريخ', 'الجغرافيا', 'الفلسفة', 'الاقتصاد', 'الرياضة'], resources: ['دروس', 'فروض PDF', 'تمارين', 'فيديوهات', 'QCM'] }
+            }
+        };
+        
+        function showHome() {
+            document.getElementById('levelsSection').style.display = 'block';
+            document.getElementById('resourcesSection').classList.remove('active');
+        }
+        
+        function showResources() {
+            // يمكن توجيه إلى الصفحة الرئيسية للموارد
+            showHome();
+        }
+        
+        function showResourcesByGrade(level, grade) {
+            currentLevel = level;
+            currentGrade = grade;
+            
+            let gradeName = '';
+            if (level === 'primary') gradeName = `السنة ${grade} ابتدائي`;
+            else if (level === 'middle') gradeName = `السنة ${grade} أساسي`;
+            else gradeName = `السنة ${grade-9} ثانوي`;
+            
+            document.getElementById('selectedGradeTitle').innerHTML = `📚 الموارد التعليمية - ${gradeName}`;
+            
+            const data = resources[level][grade];
+            const grid = document.getElementById('resourcesGrid');
+            grid.innerHTML = '';
+            
+            // إضافة المواد
+            data.subjects.forEach(subject => {
+                data.resources.forEach(resourceType => {
+                    const card = document.createElement('div');
+                    card.className = 'resource-card';
+                    
+                    let icon = '';
+                    if (resourceType === 'دروس') icon = 'fa-book';
+                    else if (resourceType === 'فروض PDF') icon = 'fa-file-pdf';
+                    else if (resourceType === 'تمارين') icon = 'fa-pencil';
+                    else if (resourceType === 'فيديوهات') icon = 'fa-video';
+                    else if (resourceType === 'QCM') icon = 'fa-question-circle';
+                    
+                    card.innerHTML = `
+                        <div class="resource-icon">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="resource-content">
+                            <div class="resource-title">${subject} - ${resourceType}</div>
+                            <div class="resource-desc">${resourceType} تفاعلية لطلاب ${gradeName}</div>
+                            <button class="resource-btn" onclick="openResource('${subject}', '${resourceType}', ${grade}, '${level}')">
+                                <i class="fas fa-download"></i> تحميل / مشاهدة
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+            
+            // إضافة مقاطع فيديو تعليمية
+            const videoCard = document.createElement('div');
+            videoCard.className = 'resource-card';
+            videoCard.innerHTML = `
+                <div class="resource-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="resource-content">
+                    <div class="resource-title">📺 فيديوهات تعليمية - ${gradeName}</div>
+                    <div class="resource-desc">مقاطع فيديو تعليمية لجميع المواد</div>
+                    <button class="resource-btn" onclick="openVideoPlayer('${gradeName}')">
+                        <i class="fas fa-play"></i> مشاهدة الفيديوهات
+                    </button>
+                </div>
+            `;
+            grid.appendChild(videoCard);
+            
+            // إخفاء قسم المستويات وإظهار قسم الموارد
+            document.getElementById('levelsSection').style.display = 'none';
+            document.getElementById('resourcesSection').classList.add('active');
+        }
+        
+        function openResource(subject, resourceType, grade, level) {
+            alert(`جاري تحميل ${resourceType} لمادة ${subject} - سيتم إضافة المحتوى قريباً`);
+        }
+        
+        function openVideoPlayer(gradeName) {
+            alert(`سيتم فتح مشغل الفيديو لـ ${gradeName}`);
+        }
+        
+        function backToLevels() {
+            document.getElementById('levelsSection').style.display = 'block';
+            document.getElementById('resourcesSection').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
