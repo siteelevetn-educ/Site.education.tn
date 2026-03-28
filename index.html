@@ -6,6 +6,12 @@
     <title>منصة تعليمية - تونس</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        // تكوين PDF.js للعمل مع الملفات البعيدة
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
     <style>
         * {
             margin: 0;
@@ -194,69 +200,76 @@
         .file-list {
             max-height: none;
             overflow-y: visible;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
         
         .file-item {
             background: white;
             border-radius: 12px;
-            margin-bottom: 20px;
-            padding: 15px;
+            overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .file-preview {
-            flex: 3;
-            min-width: 200px;
+            transition: transform 0.3s;
             cursor: pointer;
         }
         
-        .thumbnail {
-            width: 100%;
-            height: 180px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .file-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .thumbnail-container {
             background: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            color: #e74c3c;
+            min-height: 200px;
+            position: relative;
+        }
+        
+        .thumbnail-canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .thumbnail-loading {
+            position: absolute;
+            color: #667eea;
+            font-size: 14px;
         }
         
         .file-info {
-            margin-top: 8px;
+            padding: 12px;
             text-align: center;
+            border-top: 1px solid #eee;
         }
         
         .file-name {
             font-size: 13px;
             color: #2c3e50;
             word-break: break-all;
+            margin-bottom: 10px;
+            display: block;
         }
         
         .file-actions {
-            flex: 1;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            justify-content: center;
         }
         
         .view-btn, .download-btn {
-            padding: 10px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Tajawal', sans-serif;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 5px;
             transition: 0.3s;
-            font-size: 14px;
+            font-size: 12px;
         }
         
         .view-btn {
@@ -305,15 +318,8 @@
             .hero h1 { font-size: 32px; }
             .level-title { font-size: 22px; }
             .grades-grid { grid-template-columns: repeat(2, 1fr); }
-            .file-item {
-                flex-direction: column;
-            }
-            .file-actions {
-                flex-direction: row;
-                width: 100%;
-            }
-            .view-btn, .download-btn {
-                flex: 1;
+            .file-list {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             }
         }
         
@@ -322,6 +328,8 @@
             padding: 40px;
             color: #667eea;
             font-size: 18px;
+            background: white;
+            border-radius: 12px;
         }
         
         .empty-message {
@@ -594,25 +602,29 @@
                         const fileItem = document.createElement('div');
                         fileItem.className = 'file-item';
                         
+                        const fileUrl = file.download_url;
+                        const fileName = file.name;
+                        
                         fileItem.innerHTML = `
-                            <div class="file-preview" onclick="viewFile('${file.download_url}')">
-                                <div class="thumbnail">
-                                    <i class="fas fa-file-pdf"></i>
-                                </div>
-                                <div class="file-info">
-                                    <span class="file-name">📄 ${file.name}</span>
-                                </div>
+                            <div class="thumbnail-container" id="thumb-${pdfFiles.indexOf(file)}">
+                                <div class="thumbnail-loading">⏳ جاري تحميل المعاينة...</div>
                             </div>
-                            <div class="file-actions">
-                                <button class="view-btn" onclick="viewFile('${file.download_url}')">
-                                    <i class="fas fa-eye"></i> معاينة
-                                </button>
-                                <button class="download-btn" onclick="downloadFile('${file.download_url}', '${file.name}')">
-                                    <i class="fas fa-download"></i> تحميل
-                                </button>
+                            <div class="file-info">
+                                <span class="file-name">📄 ${fileName}</span>
+                                <div class="file-actions">
+                                    <button class="view-btn" onclick="viewFile('${fileUrl}')">
+                                        <i class="fas fa-eye"></i> معاينة
+                                    </button>
+                                    <button class="download-btn" onclick="downloadFile('${fileUrl}', '${fileName}')">
+                                        <i class="fas fa-download"></i> تحميل
+                                    </button>
+                                </div>
                             </div>
                         `;
                         filesListDiv.appendChild(fileItem);
+                        
+                        // تحميل الصورة المصغرة باستخدام PDF.js
+                        generateThumbnail(fileUrl, `thumb-${pdfFiles.indexOf(file)}`);
                     }
                 } else {
                     filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
@@ -620,6 +632,35 @@
             } catch (error) {
                 console.error('Error loading files:', error);
                 filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>';
+            }
+        }
+        
+        async function generateThumbnail(pdfUrl, containerId) {
+            try {
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const pdf = await loadingTask.promise;
+                const page = await pdf.getPage(1);
+                
+                const viewport = page.getViewport({ scale: 1.5 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '';
+                    canvas.className = 'thumbnail-canvas';
+                    container.appendChild(canvas);
+                }
+            } catch (error) {
+                console.error('Error generating thumbnail:', error);
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-file-pdf" style="font-size:48px;color:#e74c3c;"></i><br>PDF</div>';
+                }
             }
         }
         
