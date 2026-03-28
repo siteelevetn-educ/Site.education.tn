@@ -124,24 +124,24 @@
                     for (let i = 0; i < pdfFiles.length; i++) {
                         const file = pdfFiles[i];
                         const fileCard = document.createElement('div'); fileCard.className = 'file-card';
-                        // رابط العرض المباشر (يستخدمه المتصفح لعرض PDF)
-                        const viewUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${encodeURIComponent(file.name)}`;
+                        // رابط العرض باستخدام raw.githubusercontent
+                        const rawUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${encodeURIComponent(file.name)}`;
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
                         fileCard.innerHTML = `
-                            <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${viewUrl}')">
+                            <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${rawUrl}')">
                                 <div class="thumbnail-placeholder"><i class="fas fa-file-pdf"></i><br>جاري تحميل المعاينة...</div>
                             </div>
                             <div class="file-info">
                                 <span class="file-name">📄 ${fileName}</span>
                                 <div class="file-actions">
-                                    <button class="view-btn" onclick="viewFile('${viewUrl}')"><i class="fas fa-eye"></i> معاينة</button>
+                                    <button class="view-btn" onclick="viewFile('${rawUrl}')"><i class="fas fa-eye"></i> معاينة</button>
                                     <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
                                 </div>
                             </div>
                         `;
                         filesListDiv.appendChild(fileCard);
-                        generateThumbnail(viewUrl, `thumb-${i}`);
+                        generateThumbnail(rawUrl, `thumb-${i}`);
                     }
                 } else { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; }
             } catch (error) { filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>'; }
@@ -172,9 +172,10 @@
             }
         }
         
-        // فتح الملف في علامة تبويب جديدة باستخدام عارض PDF المدمج في المتصفح
+        // استخدام Microsoft Office Viewer (لا يتطلب تسجيل دخول)
         function viewFile(fileUrl) {
-            window.open(fileUrl, '_blank');
+            const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileUrl)}`;
+            window.open(viewerUrl, '_blank');
         }
         
         function downloadFile(fileUrl, fileName) {
