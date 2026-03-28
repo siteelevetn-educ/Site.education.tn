@@ -193,11 +193,11 @@
         
         .file-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
         }
         
-        .file-item {
+        .file-card {
             background: white;
             border-radius: 12px;
             overflow: hidden;
@@ -205,34 +205,29 @@
             transition: transform 0.3s;
         }
         
-        .file-item:hover {
-            transform: translateY(-3px);
+        .file-card:hover {
+            transform: translateY(-5px);
         }
         
         .thumbnail-container {
             background: #f5f5f5;
+            height: 220px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 220px;
             cursor: pointer;
             overflow: hidden;
+            position: relative;
         }
         
         .thumbnail-img {
             width: 100%;
-            height: auto;
-            min-height: 200px;
+            height: 100%;
             object-fit: cover;
-            display: block;
         }
         
         .thumbnail-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
+            text-align: center;
             color: #7f8c8d;
         }
         
@@ -258,7 +253,7 @@
         
         .file-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: center;
         }
         
@@ -322,7 +317,7 @@
             .level-title { font-size: 22px; }
             .grades-grid { grid-template-columns: repeat(2, 1fr); }
             .file-list {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
         
@@ -447,16 +442,13 @@
         let currentSubject = '';
         let currentSubjectFolder = '';
         let currentSubjects = [];
-        let currentFolderType = '';
         
-        // تعريف المواد حسب المستوى
         const subjectsData = {
             primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
             college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
             national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique']
         };
         
-        // المواد حسب مستوى الثانوي
         const lyceeSubjects = {
             'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'],
             'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
@@ -464,7 +456,6 @@
             'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف']
         };
         
-        // أنواع الموارد حسب المستوى
         const resourceFolders = {
             primaire: ['cours', 'devoirs', 'examens', 'videos'],
             college: ['cours', 'devoirs', 'examens', 'videos'],
@@ -472,7 +463,6 @@
             national: ['examens', 'qcm']
         };
         
-        // ترجمة أسماء المواد إلى أسماء المجلدات
         const folderNames = {
             'اللغة العربية': 'arabe',
             'الفرنسية': 'francais',
@@ -491,7 +481,6 @@
             'الإقتصاد والتصرف': 'economie'
         };
         
-        // ترجمة أنواع الموارد إلى أسماء عربية للعرض
         const folderNamesAr = {
             'cours': '📚 دروس',
             'devoirs': '📝 فروض',
@@ -500,7 +489,6 @@
             'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)'
         };
         
-        // أيقونات المجلدات
         const folderIcons = {
             'cours': 'fa-book',
             'devoirs': 'fa-pencil-alt',
@@ -577,7 +565,6 @@
         }
         
         async function showFiles(folderType) {
-            currentFolderType = folderType;
             document.getElementById('selectedFilesTitle').innerHTML = `📄 ${folderNamesAr[folderType]} - ${currentSubject}`;
             
             const filesListDiv = document.getElementById('filesList');
@@ -604,20 +591,22 @@
                     filesListDiv.innerHTML = '';
                     
                     for (const file of pdfFiles) {
-                        const fileItem = document.createElement('div');
-                        fileItem.className = 'file-item';
+                        const fileCard = document.createElement('div');
+                        fileCard.className = 'file-card';
                         
                         const fileUrl = file.download_url;
                         const fileName = file.name;
-                        const thumbnailName = fileName.replace(/\.pdf$/i, '.jpg');
-                        const thumbnailUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${thumbnailName}`;
                         
-                        fileItem.innerHTML = `
+                        // استخدام خدمة Google Drive Viewer لعرض الصفحة الأولى
+                        const thumbnailUrl = `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(fileUrl)}`;
+                        
+                        fileCard.innerHTML = `
                             <div class="thumbnail-container" onclick="viewFile('${fileUrl}')">
-                                <img class="thumbnail-img" 
-                                     src="${thumbnailUrl}" 
-                                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'thumbnail-placeholder\'><i class=\'fas fa-file-pdf\'></i><span>PDF</span></div>'"
-                                     alt="${fileName}">
+                                <iframe src="${thumbnailUrl}" 
+                                        style="width:100%; height:100%; border:none;"
+                                        onload="this.style.opacity=1"
+                                        onerror="this.parentElement.innerHTML='<div class=\'thumbnail-placeholder\'><i class=\'fas fa-file-pdf\'></i><br>PDF</div>'">
+                                </iframe>
                             </div>
                             <div class="file-info">
                                 <span class="file-name">📄 ${fileName}</span>
@@ -631,7 +620,7 @@
                                 </div>
                             </div>
                         `;
-                        filesListDiv.appendChild(fileItem);
+                        filesListDiv.appendChild(fileCard);
                     }
                 } else {
                     filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
