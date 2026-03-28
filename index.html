@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة تعليمية - موارد تعليمية مجانية</title>
+    <title>منصة تعليمية - تونس</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -151,7 +151,7 @@
         
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             margin-top: 30px;
         }
@@ -162,6 +162,7 @@
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            cursor: pointer;
         }
         
         .resource-card:hover {
@@ -170,10 +171,9 @@
         
         .resource-icon {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             color: white;
-            cursor: pointer;
         }
         
         .resource-icon i {
@@ -182,26 +182,26 @@
         
         .resource-content {
             padding: 20px;
+            text-align: center;
         }
         
         .resource-title {
             font-size: 18px;
             font-weight: 700;
-            margin-bottom: 10px;
             color: #2c3e50;
-            text-align: center;
         }
         
         .file-list {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
-            border-top: 1px solid #eee;
-            margin-top: 10px;
-            padding-top: 10px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            margin-top: 20px;
+            background: white;
         }
         
         .file-item {
-            padding: 12px;
+            padding: 15px;
             border-bottom: 1px solid #f0f0f0;
             display: flex;
             justify-content: space-between;
@@ -216,7 +216,7 @@
         
         .file-name {
             color: #2c3e50;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         .download-icon {
@@ -225,7 +225,7 @@
         
         .back-btn {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .back-btn button {
@@ -255,18 +255,16 @@
         
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             color: #667eea;
+            font-size: 18px;
         }
         
         .empty-message {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             color: #7f8c8d;
-        }
-        
-        .folder-card {
-            cursor: pointer;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -332,9 +330,7 @@
     <section class="resources-section" id="subjectsSection">
         <div class="level-card">
             <h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2>
-            <div class="grades-grid" id="subjectsGrid">
-                <!-- سيتم تعبئتها بالمواد -->
-            </div>
+            <div class="grades-grid" id="subjectsGrid"></div>
             <div class="back-btn">
                 <button onclick="backToLevels()">← العودة إلى المستويات</button>
             </div>
@@ -345,9 +341,7 @@
     <section class="resources-section" id="foldersSection">
         <div class="level-card">
             <h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2>
-            <div class="resources-grid" id="foldersGrid">
-                <!-- سيتم تعبئتها بأنواع الموارد -->
-            </div>
+            <div class="resources-grid" id="foldersGrid"></div>
             <div class="back-btn">
                 <button onclick="backToSubjectsFromFolders()">← العودة إلى المواد</button>
             </div>
@@ -358,9 +352,7 @@
     <section class="resources-section" id="filesSection">
         <div class="level-card">
             <h2 class="level-title" id="selectedFilesTitle">الملفات</h2>
-            <div id="filesList" class="file-list">
-                <!-- سيتم تعبئتها بالملفات -->
-            </div>
+            <div id="filesList" class="file-list"></div>
             <div class="back-btn">
                 <button onclick="backToFolders()">← العودة إلى أنواع الموارد</button>
             </div>
@@ -379,14 +371,14 @@
         let currentSubjectFolder = '';
         let currentSubjects = [];
         
-        // تعريف المواد حسب المستوى (مع إضافة الإقتصاد والتصرف للمستويات المناسبة)
+        // تعريف المواد حسب المستوى
         const subjectsData = {
             primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
             college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
             national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique']
         };
         
-        // المواد حسب مستوى الثانوي (كل مستوى له مواد مختلفة)
+        // المواد حسب مستوى الثانوي
         const lyceeSubjects = {
             'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'],
             'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
@@ -394,10 +386,15 @@
             'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف']
         };
         
-        // أنواع الموارد (المجلدات)
-        const resourceFolders = ['cours', 'devoirs', 'examens', 'videos'];
+        // أنواع الموارد حسب المستوى
+        const resourceFolders = {
+            primaire: ['cours', 'devoirs', 'examens', 'videos'],
+            college: ['cours', 'devoirs', 'examens', 'videos'],
+            lycee: ['cours', 'devoirs', 'examens', 'videos'],
+            national: ['examens', 'qcm']   // فقط امتحانات و Qcm
+        };
         
-        // ترجمة أسماء المواد إلى أسماء المجلدات (بالإنجليزية أو الفرنسية للروابط)
+        // ترجمة أسماء المواد إلى أسماء المجلدات
         const folderNames = {
             'اللغة العربية': 'arabe',
             'الفرنسية': 'francais',
@@ -420,8 +417,9 @@
         const folderNamesAr = {
             'cours': '📚 دروس',
             'devoirs': '📝 فروض',
-            'examens': '📋 اختبارات',
-            'videos': '🎥 فيديوهات تعليمية'
+            'examens': '📋 إمتحانات',
+            'videos': '🎥 فيديوهات تعليمية',
+            'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)'
         };
         
         // أيقونات المجلدات
@@ -429,7 +427,8 @@
             'cours': 'fa-book',
             'devoirs': 'fa-pencil-alt',
             'examens': 'fa-file-alt',
-            'videos': 'fa-video'
+            'videos': 'fa-video',
+            'qcm': 'fa-question-circle'
         };
         
         function showHome() {
@@ -443,7 +442,6 @@
             currentLevel = level;
             currentGradeName = gradeName;
             
-            // تحديد المواد حسب المستوى
             if (level === 'lycee') {
                 currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
             } else {
@@ -479,9 +477,10 @@
             const grid = document.getElementById('foldersGrid');
             grid.innerHTML = '';
             
-            resourceFolders.forEach(folder => {
+            const folders = resourceFolders[currentLevel];
+            folders.forEach(folder => {
                 const card = document.createElement('div');
-                card.className = 'resource-card folder-card';
+                card.className = 'resource-card';
                 card.onclick = () => showFiles(folder);
                 card.innerHTML = `
                     <div class="resource-icon">
@@ -508,7 +507,6 @@
             document.getElementById('foldersSection').classList.remove('active');
             document.getElementById('filesSection').classList.add('active');
             
-            // بناء رابط مجلد الملفات على GitHub
             const folderPath = `fichiers/${currentLevel}/${currentSubjectFolder}/${folderType}/`;
             const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
             
@@ -528,7 +526,7 @@
                     pdfFiles.forEach(file => {
                         const fileItem = document.createElement('div');
                         fileItem.className = 'file-item';
-                        fileItem.onclick = () => openFile(file.download_url);
+                        fileItem.onclick = () => window.open(file.download_url, '_blank');
                         fileItem.innerHTML = `
                             <span class="file-name">📄 ${file.name}</span>
                             <i class="fas fa-download download-icon"></i>
@@ -542,10 +540,6 @@
                 console.error('Error loading files:', error);
                 filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>';
             }
-        }
-        
-        function openFile(fileUrl) {
-            window.open(fileUrl, '_blank');
         }
         
         function backToLevels() {
