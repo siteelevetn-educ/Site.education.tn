@@ -7,632 +7,140 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            direction: rtl;
-        }
-        
-        .navbar {
-            background: rgba(255,255,255,0.95);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 15px 0;
-        }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        
-        .nav-links a:hover {
-            color: #667eea;
-        }
-        
-        .hero {
-            padding: 120px 20px 60px;
-            text-align: center;
-            color: white;
-        }
-        
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        .hero p {
-            font-size: 18px;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .levels-section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        
-        .level-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        
-        .level-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .level-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-            display: inline-block;
-        }
-        
-        .grades-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .grade-btn {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .grade-btn:hover {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .resources-section {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: none;
-        }
-        
-        .resources-section.active {
-            display: block;
-        }
-        
-        .resources-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .resource-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-        
-        .resource-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .resource-icon {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 25px;
-            text-align: center;
-            color: white;
-        }
-        
-        .resource-icon i {
-            font-size: 40px;
-        }
-        
-        .resource-content {
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .resource-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #2c3e50;
-        }
-        
-        .file-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .file-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        
-        .file-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .thumbnail-container {
-            background: #f5f5f5;
-            height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .thumbnail-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .thumbnail-placeholder {
-            text-align: center;
-            color: #7f8c8d;
-        }
-        
-        .thumbnail-placeholder i {
-            font-size: 48px;
-            color: #e74c3c;
-            margin-bottom: 10px;
-        }
-        
-        .file-info {
-            padding: 12px;
-            text-align: center;
-            border-top: 1px solid #eee;
-        }
-        
-        .file-name {
-            font-size: 13px;
-            color: #2c3e50;
-            word-break: break-all;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .file-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .view-btn, .download-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: 0.3s;
-            font-size: 12px;
-        }
-        
-        .view-btn {
-            background: #3498db;
-            color: white;
-        }
-        
-        .view-btn:hover {
-            background: #2980b9;
-        }
-        
-        .download-btn {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .download-btn:hover {
-            background: #229954;
-        }
-        
-        .back-btn {
-            text-align: center;
-            margin-top: 25px;
-        }
-        
-        .back-btn button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-        }
-        
-        .footer {
-            background: #1a2632;
-            color: white;
-            text-align: center;
-            padding: 30px;
-            margin-top: 60px;
-        }
-        
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            .level-title { font-size: 22px; }
-            .grades-grid { grid-template-columns: repeat(2, 1fr); }
-            .file-list {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-            font-size: 18px;
-            background: white;
-            border-radius: 12px;
-        }
-        
-        .empty-message {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-            font-size: 16px;
-            background: white;
-            border-radius: 12px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; direction: rtl; }
+        .navbar { background: rgba(255,255,255,0.95); box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .logo { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 500; transition: 0.3s; cursor: pointer; }
+        .nav-links a:hover { color: #667eea; }
+        .hero { padding: 120px 20px 60px; text-align: center; color: white; }
+        .hero h1 { font-size: 48px; margin-bottom: 20px; }
+        .hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        .levels-section { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .level-card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .level-card:hover { transform: translateY(-5px); }
+        .level-title { font-size: 28px; font-weight: 800; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
+        .grades-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .grade-btn { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; color: #2c3e50; cursor: pointer; transition: all 0.3s; text-align: center; }
+        .grade-btn:hover { background: linear-gradient(135deg, #667eea, #764ba2); color: white; transform: translateY(-2px); }
+        .resources-section { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: none; }
+        .resources-section.active { display: block; }
+        .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
+        .resource-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
+        .resource-card:hover { transform: translateY(-5px); }
+        .resource-icon { background: linear-gradient(135deg, #667eea, #764ba2); padding: 25px; text-align: center; color: white; }
+        .resource-icon i { font-size: 40px; }
+        .resource-content { padding: 20px; text-align: center; }
+        .resource-title { font-size: 18px; font-weight: 700; color: #2c3e50; }
+        .file-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .file-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .file-card:hover { transform: translateY(-5px); }
+        .thumbnail-container { background: #f5f5f5; height: 260px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+        .thumbnail-iframe { width: 100%; height: 100%; border: none; }
+        .file-info { padding: 12px; text-align: center; border-top: 1px solid #eee; }
+        .file-name { font-size: 13px; color: #2c3e50; word-break: break-all; margin-bottom: 10px; display: block; }
+        .file-actions { display: flex; gap: 10px; justify-content: center; }
+        .view-btn, .download-btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Tajawal', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; font-size: 12px; }
+        .view-btn { background: #3498db; color: white; }
+        .view-btn:hover { background: #2980b9; }
+        .download-btn { background: #27ae60; color: white; }
+        .download-btn:hover { background: #229954; }
+        .back-btn { text-align: center; margin-top: 25px; }
+        .back-btn button { background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 10px; font-size: 16px; cursor: pointer; font-family: 'Tajawal', sans-serif; }
+        .footer { background: #1a2632; color: white; text-align: center; padding: 30px; margin-top: 60px; }
+        @media (max-width: 768px) { .hero h1 { font-size: 32px; } .level-title { font-size: 22px; } .grades-grid { grid-template-columns: repeat(2, 1fr); } .file-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); } }
+        .loading { text-align: center; padding: 40px; color: #667eea; font-size: 18px; background: white; border-radius: 12px; }
+        .empty-message { text-align: center; padding: 40px; color: #7f8c8d; font-size: 16px; background: white; border-radius: 12px; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">📚 منصة تعليمية - تونس</div>
-            <ul class="nav-links">
-                <li><a onclick="showHome()">الرئيسية</a></li>
-                <li><a onclick="showHome()">الموارد</a></li>
-                <li><a href="#">تواصل معنا</a></li>
-            </ul>
-        </div>
-    </nav>
+    <nav class="navbar"><div class="nav-container"><div class="logo">📚 منصة تعليمية - تونس</div><ul class="nav-links"><li><a onclick="showHome()">الرئيسية</a></li><li><a onclick="showHome()">الموارد</a></li><li><a href="#">تواصل معنا</a></li></ul></div></nav>
+    <section class="hero"><h1>منصة تعليمية متكاملة</h1><p>دروس، فروض، تمارين تفاعلية، وفيديوهات تعليمية لجميع المستويات</p></section>
     
-    <section class="hero">
-        <h1>منصة تعليمية متكاملة</h1>
-        <p>دروس، فروض، تمارين تفاعلية، وفيديوهات تعليمية لجميع المستويات</p>
-    </section>
-    
-    <!-- مستويات التعليم -->
     <section class="levels-section" id="levelsSection">
-        <div class="level-card">
-            <h2 class="level-title">🏫 التعليم الابتدائي</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button>
-                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button>
-                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button>
-                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button>
-                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button>
-                <button class="grade-btn" onclick="showSubjects('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button>
-            </div>
-        </div>
-        
-        <div class="level-card">
-            <h2 class="level-title">📖 التعليم الإعدادي</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button>
-                <button class="grade-btn" onclick="showSubjects('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button>
-                <button class="grade-btn" onclick="showSubjects('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button>
-            </div>
-        </div>
-        
-        <div class="level-card">
-            <h2 class="level-title">🎓 التعليم الثانوي</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button>
-                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button>
-                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button>
-                <button class="grade-btn" onclick="showSubjects('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button>
-            </div>
-        </div>
-
-        <div class="level-card">
-            <h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showSubjects('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button>
-            </div>
-        </div>
+        <div class="level-card"><h2 class="level-title">🏫 التعليم الابتدائي</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button></div></div>
+        <div class="level-card"><h2 class="level-title">📖 التعليم الإعدادي</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button><button class="grade-btn" onclick="showSubjects('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button><button class="grade-btn" onclick="showSubjects('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🎓 التعليم الثانوي</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button></div></div>
     </section>
     
-    <!-- قسم المواد -->
-    <section class="resources-section" id="subjectsSection">
-        <div class="level-card">
-            <h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2>
-            <div class="grades-grid" id="subjectsGrid"></div>
-            <div class="back-btn">
-                <button onclick="backToLevels()">← العودة إلى المستويات</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- قسم المجلدات -->
-    <section class="resources-section" id="foldersSection">
-        <div class="level-card">
-            <h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2>
-            <div class="resources-grid" id="foldersGrid"></div>
-            <div class="back-btn">
-                <button onclick="backToSubjectsFromFolders()">← العودة إلى المواد</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- قسم عرض الملفات -->
-    <section class="resources-section" id="filesSection">
-        <div class="level-card">
-            <h2 class="level-title" id="selectedFilesTitle">الملفات</h2>
-            <div id="filesList" class="file-list"></div>
-            <div class="back-btn">
-                <button onclick="backToFolders()">← العودة إلى أنواع الموارد</button>
-            </div>
-        </div>
-    </section>
+    <section class="resources-section" id="subjectsSection"><div class="level-card"><h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2><div class="grades-grid" id="subjectsGrid"></div><div class="back-btn"><button onclick="backToLevels()">← العودة إلى المستويات</button></div></div></section>
+    <section class="resources-section" id="foldersSection"><div class="level-card"><h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2><div class="resources-grid" id="foldersGrid"></div><div class="back-btn"><button onclick="backToSubjectsFromFolders()">← العودة إلى المواد</button></div></div></section>
+    <section class="resources-section" id="filesSection"><div class="level-card"><h2 class="level-title" id="selectedFilesTitle">الملفات</h2><div id="filesList" class="file-list"></div><div class="back-btn"><button onclick="backToFolders()">← العودة إلى أنواع الموارد</button></div></div></section>
     
-    <footer class="footer">
-        <p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p>
-        <p style="margin-top: 10px; font-size: 12px;">منصة تعليمية مجانية للجميع</p>
-    </footer>
+    <footer class="footer"><p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p><p style="margin-top: 10px; font-size: 12px;">منصة تعليمية مجانية للجميع</p></footer>
     
     <script>
-        let currentLevel = '';
-        let currentGradeName = '';
-        let currentSubject = '';
-        let currentSubjectFolder = '';
-        let currentSubjects = [];
+        let currentLevel = '', currentGradeName = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         
-        const subjectsData = {
-            primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
-            college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
-            national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique']
-        };
+        const subjectsData = { primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'], college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'], national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique'] };
+        const lyceeSubjects = { 'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'], 'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'], 'السنة الثالثة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'], 'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'] };
+        const resourceFolders = { primaire: ['cours', 'devoirs', 'examens', 'videos'], college: ['cours', 'devoirs', 'examens', 'videos'], lycee: ['cours', 'devoirs', 'examens', 'videos'], national: ['examens', 'qcm'] };
+        const folderNames = { 'اللغة العربية': 'arabe', 'الفرنسية': 'francais', 'الأنكليزية': 'anglais', 'الرياضيات': 'maths', 'إيقاظ علمي': 'eveil', 'الفيزياء': 'physique', 'العلوم الطبيعية': 'sciences', 'التكنولوجيا': 'technologie', 'français': 'francais', 'english': 'anglais', 'maths': 'maths', 'physique': 'physique', 'technique': 'technique', 'informatique': 'informatique', 'الإقتصاد والتصرف': 'economie' };
+        const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
+        const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
         
-        const lyceeSubjects = {
-            'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'],
-            'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
-            'السنة الثالثة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
-            'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف']
-        };
-        
-        const resourceFolders = {
-            primaire: ['cours', 'devoirs', 'examens', 'videos'],
-            college: ['cours', 'devoirs', 'examens', 'videos'],
-            lycee: ['cours', 'devoirs', 'examens', 'videos'],
-            national: ['examens', 'qcm']
-        };
-        
-        const folderNames = {
-            'اللغة العربية': 'arabe',
-            'الفرنسية': 'francais',
-            'الأنكليزية': 'anglais',
-            'الرياضيات': 'maths',
-            'إيقاظ علمي': 'eveil',
-            'الفيزياء': 'physique',
-            'العلوم الطبيعية': 'sciences',
-            'التكنولوجيا': 'technologie',
-            'français': 'francais',
-            'english': 'anglais',
-            'maths': 'maths',
-            'physique': 'physique',
-            'technique': 'technique',
-            'informatique': 'informatique',
-            'الإقتصاد والتصرف': 'economie'
-        };
-        
-        const folderNamesAr = {
-            'cours': '📚 دروس',
-            'devoirs': '📝 فروض',
-            'examens': '📋 إمتحانات',
-            'videos': '🎥 فيديوهات تعليمية',
-            'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)'
-        };
-        
-        const folderIcons = {
-            'cours': 'fa-book',
-            'devoirs': 'fa-pencil-alt',
-            'examens': 'fa-file-alt',
-            'videos': 'fa-video',
-            'qcm': 'fa-question-circle'
-        };
-        
-        function showHome() {
-            document.getElementById('levelsSection').style.display = 'block';
-            document.getElementById('subjectsSection').classList.remove('active');
-            document.getElementById('foldersSection').classList.remove('active');
-            document.getElementById('filesSection').classList.remove('active');
-        }
+        function showHome() { document.getElementById('levelsSection').style.display = 'block'; document.getElementById('subjectsSection').classList.remove('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active'); }
         
         function showSubjects(level, gradeName) {
-            currentLevel = level;
-            currentGradeName = gradeName;
-            
-            if (level === 'lycee') {
-                currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
-            } else {
-                currentSubjects = subjectsData[level];
-            }
-            
+            currentLevel = level; currentGradeName = gradeName;
+            currentSubjects = (level === 'lycee') ? (lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي']) : subjectsData[level];
             document.getElementById('selectedLevelTitle').innerHTML = `📚 المواد التعليمية - ${gradeName}`;
-            
-            const grid = document.getElementById('subjectsGrid');
-            grid.innerHTML = '';
-            
-            currentSubjects.forEach(subject => {
-                const card = document.createElement('div');
-                card.className = 'grade-btn';
-                card.style.width = '100%';
-                card.textContent = subject;
-                card.onclick = () => showFolders(subject);
-                grid.appendChild(card);
-            });
-            
-            document.getElementById('levelsSection').style.display = 'none';
-            document.getElementById('subjectsSection').classList.add('active');
-            document.getElementById('foldersSection').classList.remove('active');
-            document.getElementById('filesSection').classList.remove('active');
+            const grid = document.getElementById('subjectsGrid'); grid.innerHTML = '';
+            currentSubjects.forEach(subject => { const card = document.createElement('div'); card.className = 'grade-btn'; card.style.width = '100%'; card.textContent = subject; card.onclick = () => showFolders(subject); grid.appendChild(card); });
+            document.getElementById('levelsSection').style.display = 'none'; document.getElementById('subjectsSection').classList.add('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active');
         }
         
         function showFolders(subject) {
-            currentSubject = subject;
-            currentSubjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
-            
+            currentSubject = subject; currentSubjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
             document.getElementById('selectedFolderTitle').innerHTML = `📁 ${subject} - ${currentGradeName}`;
-            
-            const grid = document.getElementById('foldersGrid');
-            grid.innerHTML = '';
-            
+            const grid = document.getElementById('foldersGrid'); grid.innerHTML = '';
             const folders = resourceFolders[currentLevel];
-            folders.forEach(folder => {
-                const card = document.createElement('div');
-                card.className = 'resource-card';
-                card.onclick = () => showFiles(folder);
-                card.innerHTML = `
-                    <div class="resource-icon">
-                        <i class="fas ${folderIcons[folder]}"></i>
-                    </div>
-                    <div class="resource-content">
-                        <div class="resource-title">${folderNamesAr[folder]}</div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-            
-            document.getElementById('subjectsSection').classList.remove('active');
-            document.getElementById('foldersSection').classList.add('active');
-            document.getElementById('filesSection').classList.remove('active');
+            folders.forEach(folder => { const card = document.createElement('div'); card.className = 'resource-card'; card.onclick = () => showFiles(folder); card.innerHTML = `<div class="resource-icon"><i class="fas ${folderIcons[folder]}"></i></div><div class="resource-content"><div class="resource-title">${folderNamesAr[folder]}</div></div>`; grid.appendChild(card); });
+            document.getElementById('subjectsSection').classList.remove('active'); document.getElementById('foldersSection').classList.add('active'); document.getElementById('filesSection').classList.remove('active');
         }
         
         async function showFiles(folderType) {
             document.getElementById('selectedFilesTitle').innerHTML = `📄 ${folderNamesAr[folderType]} - ${currentSubject}`;
-            
             const filesListDiv = document.getElementById('filesList');
             filesListDiv.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات...</div>';
-            
-            document.getElementById('foldersSection').classList.remove('active');
-            document.getElementById('filesSection').classList.add('active');
-            
+            document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.add('active');
             const folderPath = `fichiers/${currentLevel}/${currentSubjectFolder}/${folderType}/`;
             const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
-            
             try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                
+                const response = await fetch(apiUrl); const data = await response.json();
                 if (response.ok && Array.isArray(data)) {
                     const pdfFiles = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.PDF'));
-                    
-                    if (pdfFiles.length === 0) {
-                        filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
-                        return;
-                    }
-                    
+                    if (pdfFiles.length === 0) { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; return; }
                     filesListDiv.innerHTML = '';
-                    
                     for (const file of pdfFiles) {
-                        const fileCard = document.createElement('div');
-                        fileCard.className = 'file-card';
-                        
-                        const fileUrl = file.download_url;
-                        const fileName = file.name;
-                        
-                        // استخدام خدمة Google Drive Viewer لعرض الصفحة الأولى
-                        const thumbnailUrl = `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(fileUrl)}`;
-                        
+                        const fileCard = document.createElement('div'); fileCard.className = 'file-card';
+                        const fileUrl = file.download_url; const fileName = file.name;
+                        const viewerUrl = `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(fileUrl)}`;
                         fileCard.innerHTML = `
                             <div class="thumbnail-container" onclick="viewFile('${fileUrl}')">
-                                <iframe src="${thumbnailUrl}" 
-                                        style="width:100%; height:100%; border:none;"
-                                        onload="this.style.opacity=1"
-                                        onerror="this.parentElement.innerHTML='<div class=\'thumbnail-placeholder\'><i class=\'fas fa-file-pdf\'></i><br>PDF</div>'">
-                                </iframe>
+                                <iframe src="${viewerUrl}" class="thumbnail-iframe" title="${fileName}"></iframe>
                             </div>
                             <div class="file-info">
                                 <span class="file-name">📄 ${fileName}</span>
                                 <div class="file-actions">
-                                    <button class="view-btn" onclick="viewFile('${fileUrl}')">
-                                        <i class="fas fa-eye"></i> معاينة
-                                    </button>
-                                    <button class="download-btn" onclick="downloadFile('${fileUrl}', '${fileName}')">
-                                        <i class="fas fa-download"></i> تحميل
-                                    </button>
+                                    <button class="view-btn" onclick="viewFile('${fileUrl}')"><i class="fas fa-eye"></i> معاينة</button>
+                                    <button class="download-btn" onclick="downloadFile('${fileUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
                                 </div>
                             </div>
                         `;
                         filesListDiv.appendChild(fileCard);
                     }
-                } else {
-                    filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
-                }
-            } catch (error) {
-                console.error('Error loading files:', error);
-                filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>';
-            }
+                } else { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; }
+            } catch (error) { filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>'; }
         }
         
+        // إصلاح زر المعاينة: يفتح الملف في نافذة جديدة بنفس طريقة العرض
         function viewFile(fileUrl) {
-            window.open(fileUrl, '_blank');
+            const viewerUrl = `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(fileUrl)}`;
+            window.open(viewerUrl, '_blank');
         }
         
         function downloadFile(fileUrl, fileName) {
@@ -644,23 +152,9 @@
             document.body.removeChild(link);
         }
         
-        function backToLevels() {
-            document.getElementById('levelsSection').style.display = 'block';
-            document.getElementById('subjectsSection').classList.remove('active');
-            document.getElementById('foldersSection').classList.remove('active');
-            document.getElementById('filesSection').classList.remove('active');
-        }
-        
-        function backToSubjectsFromFolders() {
-            document.getElementById('subjectsSection').classList.add('active');
-            document.getElementById('foldersSection').classList.remove('active');
-            document.getElementById('filesSection').classList.remove('active');
-        }
-        
-        function backToFolders() {
-            document.getElementById('foldersSection').classList.add('active');
-            document.getElementById('filesSection').classList.remove('active');
-        }
+        function backToLevels() { document.getElementById('levelsSection').style.display = 'block'; document.getElementById('subjectsSection').classList.remove('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active'); }
+        function backToSubjectsFromFolders() { document.getElementById('subjectsSection').classList.add('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active'); }
+        function backToFolders() { document.getElementById('foldersSection').classList.add('active'); document.getElementById('filesSection').classList.remove('active'); }
     </script>
 </body>
 </html>
