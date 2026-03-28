@@ -6,12 +6,6 @@
     <title>منصة تعليمية - تونس</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- PDF.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script>
-        // تكوين PDF.js للعمل مع الملفات البعيدة
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-    </script>
     <style>
         * {
             margin: 0;
@@ -198,8 +192,6 @@
         }
         
         .file-list {
-            max-height: none;
-            overflow-y: visible;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
@@ -211,7 +203,6 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s;
-            cursor: pointer;
         }
         
         .file-item:hover {
@@ -223,20 +214,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 200px;
-            position: relative;
+            min-height: 220px;
+            cursor: pointer;
+            overflow: hidden;
         }
         
-        .thumbnail-canvas {
-            max-width: 100%;
+        .thumbnail-img {
+            width: 100%;
             height: auto;
+            min-height: 200px;
+            object-fit: cover;
             display: block;
         }
         
-        .thumbnail-loading {
-            position: absolute;
-            color: #667eea;
-            font-size: 14px;
+        .thumbnail-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .thumbnail-placeholder i {
+            font-size: 48px;
+            color: #e74c3c;
+            margin-bottom: 10px;
         }
         
         .file-info {
@@ -444,6 +447,7 @@
         let currentSubject = '';
         let currentSubjectFolder = '';
         let currentSubjects = [];
+        let currentFolderType = '';
         
         // تعريف المواد حسب المستوى
         const subjectsData = {
@@ -573,6 +577,7 @@
         }
         
         async function showFiles(folderType) {
+            currentFolderType = folderType;
             document.getElementById('selectedFilesTitle').innerHTML = `📄 ${folderNamesAr[folderType]} - ${currentSubject}`;
             
             const filesListDiv = document.getElementById('filesList');
@@ -604,10 +609,15 @@
                         
                         const fileUrl = file.download_url;
                         const fileName = file.name;
+                        const thumbnailName = fileName.replace(/\.pdf$/i, '.jpg');
+                        const thumbnailUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${thumbnailName}`;
                         
                         fileItem.innerHTML = `
-                            <div class="thumbnail-container" id="thumb-${pdfFiles.indexOf(file)}">
-                                <div class="thumbnail-loading">⏳ جاري تحميل المعاينة...</div>
+                            <div class="thumbnail-container" onclick="viewFile('${fileUrl}')">
+                                <img class="thumbnail-img" 
+                                     src="${thumbnailUrl}" 
+                                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'thumbnail-placeholder\'><i class=\'fas fa-file-pdf\'></i><span>PDF</span></div>'"
+                                     alt="${fileName}">
                             </div>
                             <div class="file-info">
                                 <span class="file-name">📄 ${fileName}</span>
@@ -622,9 +632,6 @@
                             </div>
                         `;
                         filesListDiv.appendChild(fileItem);
-                        
-                        // تحميل الصورة المصغرة باستخدام PDF.js
-                        generateThumbnail(fileUrl, `thumb-${pdfFiles.indexOf(file)}`);
                     }
                 } else {
                     filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
@@ -632,35 +639,6 @@
             } catch (error) {
                 console.error('Error loading files:', error);
                 filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات. الرجاء المحاولة لاحقاً.</div>';
-            }
-        }
-        
-        async function generateThumbnail(pdfUrl, containerId) {
-            try {
-                const loadingTask = pdfjsLib.getDocument(pdfUrl);
-                const pdf = await loadingTask.promise;
-                const page = await pdf.getPage(1);
-                
-                const viewport = page.getViewport({ scale: 1.5 });
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-                
-                const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = '';
-                    canvas.className = 'thumbnail-canvas';
-                    container.appendChild(canvas);
-                }
-            } catch (error) {
-                console.error('Error generating thumbnail:', error);
-                const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-file-pdf" style="font-size:48px;color:#e74c3c;"></i><br>PDF</div>';
-                }
             }
         }
         
