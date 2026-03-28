@@ -60,7 +60,7 @@
         .loading { text-align: center; padding: 40px; color: #667eea; font-size: 18px; background: white; border-radius: 12px; }
         .empty-message { text-align: center; padding: 40px; color: #7f8c8d; font-size: 16px; background: white; border-radius: 12px; }
         
-        /* PDF Viewer Modal */
+        /* PDF Viewer Modal - باستخدام iframe لعرض PDF مباشرة */
         .pdf-viewer {
             position: fixed;
             top: 0;
@@ -82,34 +82,25 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .pdf-toolbar button {
-            background: #3498db;
+        .close-viewer {
+            background: #e74c3c !important;
             color: white;
             border: none;
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
             font-family: 'Tajawal', sans-serif;
-            margin: 0 5px;
         }
-        .pdf-toolbar button:hover { background: #2980b9; }
-        .close-viewer { background: #e74c3c !important; }
         .close-viewer:hover { background: #c0392b !important; }
-        .pdf-canvas-container {
+        .pdf-frame-container {
             flex: 1;
             overflow: auto;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
             background: #525659;
         }
-        #pdfCanvas {
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            background: white;
-        }
-        .page-info {
-            margin: 0 15px;
-            font-size: 14px;
+        .pdf-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
@@ -128,18 +119,14 @@
     <section class="resources-section" id="foldersSection"><div class="level-card"><h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2><div class="resources-grid" id="foldersGrid"></div><div class="back-btn"><button onclick="backToSubjectsFromFolders()">← العودة إلى المواد</button></div></div></section>
     <section class="resources-section" id="filesSection"><div class="level-card"><h2 class="level-title" id="selectedFilesTitle">الملفات</h2><div id="filesList" class="file-list"></div><div class="back-btn"><button onclick="backToFolders()">← العودة إلى أنواع الموارد</button></div></div></section>
     
-    <!-- PDF Viewer Modal -->
+    <!-- PDF Viewer Modal باستخدام iframe -->
     <div id="pdfViewer" class="pdf-viewer">
         <div class="pdf-toolbar">
-            <div>
-                <button onclick="prevPage()">◀ السابق</button>
-                <button onclick="nextPage()">التالي ▶</button>
-                <span class="page-info">الصفحة <span id="pageNum">1</span> / <span id="pageCount">0</span></span>
-            </div>
+            <div></div>
             <button class="close-viewer" onclick="closePDFViewer()">✖ إغلاق</button>
         </div>
-        <div class="pdf-canvas-container">
-            <canvas id="pdfCanvas"></canvas>
+        <div class="pdf-frame-container">
+            <iframe id="pdfFrame" class="pdf-frame" src=""></iframe>
         </div>
     </div>
     
@@ -147,7 +134,6 @@
     
     <script>
         let currentLevel = '', currentGradeName = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
-        let pdfDoc = null, currentPage = 1, totalPages = 0;
         
         const subjectsData = { primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'], college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'], national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique'] };
         const lyceeSubjects = { 'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'], 'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'], 'السنة الثالثة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'], 'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'] };
@@ -237,48 +223,20 @@
             }
         }
         
-        async function viewFile(fileUrl) {
-            // فتح نافذة المعاينة
+        // استخدام iframe لعرض PDF مباشرة من المتصفح (بدون تشويه)
+        function viewFile(fileUrl) {
             const viewer = document.getElementById('pdfViewer');
+            const frame = document.getElementById('pdfFrame');
+            // إضافة معامل للعرض المباشر
+            frame.src = fileUrl + '#toolbar=0&navpanes=0&scrollbar=0';
             viewer.style.display = 'flex';
-            
-            // تحميل ملف PDF
-            const loadingTask = pdfjsLib.getDocument(fileUrl);
-            pdfDoc = await loadingTask.promise;
-            totalPages = pdfDoc.numPages;
-            document.getElementById('pageCount').innerText = totalPages;
-            currentPage = 1;
-            renderPage(currentPage);
-        }
-        
-        async function renderPage(pageNum) {
-            const page = await pdfDoc.getPage(pageNum);
-            const canvas = document.getElementById('pdfCanvas');
-            const context = canvas.getContext('2d');
-            const viewport = page.getViewport({ scale: 1.5 });
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const renderContext = { canvasContext: context, viewport: viewport };
-            await page.render(renderContext).promise;
-            document.getElementById('pageNum').innerText = pageNum;
-        }
-        
-        function prevPage() {
-            if (currentPage <= 1) return;
-            currentPage--;
-            renderPage(currentPage);
-        }
-        
-        function nextPage() {
-            if (currentPage >= totalPages) return;
-            currentPage++;
-            renderPage(currentPage);
         }
         
         function closePDFViewer() {
             const viewer = document.getElementById('pdfViewer');
+            const frame = document.getElementById('pdfFrame');
+            frame.src = '';
             viewer.style.display = 'none';
-            pdfDoc = null;
         }
         
         function downloadFile(fileUrl, fileName) {
