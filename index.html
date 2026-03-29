@@ -84,19 +84,47 @@
         .pages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .page-image { max-width: 100%; width: auto; height: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3); background: white; border-radius: 4px; }
         
-        .upload-form { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .upload-form, .pending-list { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 16px; }
         .form-group small { display: block; margin-top: 5px; color: #7f8c8d; font-size: 12px; }
         
-        .pending-list { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
         .pending-item { border: 1px solid #eee; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .pending-info { flex: 2; }
         .pending-actions { display: flex; gap: 10px; }
         .approve-btn { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
         .reject-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
         .preview-btn { background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+        
+        .token-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .token-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .token-modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -120,43 +148,10 @@
     
     <!-- مستويات التعليم الرئيسية -->
     <section class="levels-section" id="levelsSection">
-        <div class="level-card">
-            <h2 class="level-title">🏫 التعليم الابتدائي</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showGrades('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button>
-                <button class="grade-btn" onclick="showGrades('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button>
-                <button class="grade-btn" onclick="showGrades('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button>
-                <button class="grade-btn" onclick="showGrades('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button>
-                <button class="grade-btn" onclick="showGrades('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button>
-                <button class="grade-btn" onclick="showGrades('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button>
-            </div>
-        </div>
-        
-        <div class="level-card">
-            <h2 class="level-title">📖 التعليم الإعدادي</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showGrades('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button>
-                <button class="grade-btn" onclick="showGrades('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button>
-                <button class="grade-btn" onclick="showGrades('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button>
-            </div>
-        </div>
-        
-        <div class="level-card">
-            <h2 class="level-title">🎓 التعليم الثانوي</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showGrades('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button>
-                <button class="grade-btn" onclick="showGrades('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button>
-                <button class="grade-btn" onclick="showGrades('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button>
-                <button class="grade-btn" onclick="showGrades('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button>
-            </div>
-        </div>
-
-        <div class="level-card">
-            <h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2>
-            <div class="grades-grid">
-                <button class="grade-btn" onclick="showGrades('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button>
-            </div>
-        </div>
+        <div class="level-card"><h2 class="level-title">🏫 التعليم الابتدائي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button></div></div>
+        <div class="level-card"><h2 class="level-title">📖 التعليم الإعدادي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button><button class="grade-btn" onclick="showGrades('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button><button class="grade-btn" onclick="showGrades('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🎓 التعليم الثانوي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button></div></div>
     </section>
     
     <!-- قسم المواد (بعد اختيار السنة) -->
@@ -164,20 +159,16 @@
         <div class="level-card">
             <h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2>
             <div class="grades-grid" id="subjectsGrid"></div>
-            <div class="back-btn">
-                <button onclick="backToLevels()">← العودة إلى المستويات</button>
-            </div>
+            <div class="back-btn"><button onclick="backToLevels()">← العودة إلى المستويات</button></div>
         </div>
     </section>
 
-    <!-- قسم المجلدات (دروس، فروض، اختبارات) -->
+    <!-- قسم المجلدات -->
     <section class="resources-section" id="foldersSection">
         <div class="level-card">
             <h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2>
             <div class="resources-grid" id="foldersGrid"></div>
-            <div class="back-btn">
-                <button onclick="backToSubjects()">← العودة إلى المواد</button>
-            </div>
+            <div class="back-btn"><button onclick="backToSubjects()">← العودة إلى المواد</button></div>
         </div>
     </section>
 
@@ -186,9 +177,7 @@
         <div class="level-card">
             <h2 class="level-title" id="selectedFilesTitle">الملفات</h2>
             <div id="filesList" class="file-list"></div>
-            <div class="back-btn">
-                <button onclick="backToFolders()">← العودة إلى أنواع الموارد</button>
-            </div>
+            <div class="back-btn"><button onclick="backToFolders()">← العودة إلى أنواع الموارد</button></div>
         </div>
     </section>
     
@@ -233,7 +222,6 @@
                     <div class="form-group">
                         <label>📎 الملف (PDF فقط) *</label>
                         <input type="file" id="uploadFile" accept=".pdf" required>
-                        <small>الملفات التي لا تتجاوز 10 صفحات</small>
                     </div>
                     
                     <div class="form-group">
@@ -252,22 +240,18 @@
                 </form>
                 <div id="uploadMessage" style="margin-top:20px; text-align:center;"></div>
             </div>
-            <div class="back-btn">
-                <button onclick="showHome()">← العودة إلى الرئيسية</button>
-            </div>
+            <div class="back-btn"><button onclick="showHome()">← العودة إلى الرئيسية</button></div>
         </div>
     </section>
     
-    <!-- قسم الملفات المعلقة -->
+    <!-- قسم الملفات المعلقة (لصاحب المنصة فقط) -->
     <section class="resources-section" id="pendingSection">
         <div class="level-card">
             <h2 class="level-title">📋 الملفات المرفوعة (قيد المراجعة)</h2>
             <div id="pendingList" class="pending-list">
                 <div class="loading">⏳ جاري تحميل الملفات المعلقة...</div>
             </div>
-            <div class="back-btn">
-                <button onclick="showHome()">← العودة إلى الرئيسية</button>
-            </div>
+            <div class="back-btn"><button onclick="showHome()">← العودة إلى الرئيسية</button></div>
         </div>
     </section>
     
@@ -284,41 +268,17 @@
     <footer class="footer"><p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p><p style="margin-top: 10px; font-size: 12px;">منصة تعليمية مجانية للجميع</p></footer>
     
     <script>
-        // ==================== التكوين ====================
-        const REPO_OWNER = 'siteelevetn-educ';
-        const REPO_NAME = 'Site.education.tn';
-        const GITHUB_TOKEN = '';
-        
+        // ==================== البيانات ====================
         let currentLevel = '', currentGrade = '', currentGradeName = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
         
-        // تعريف السنوات لكل مستوى (للمجلدات)
         const gradeFolders = {
-            primaire: {
-                'السنة الأولى ابتدائي': 'annee1',
-                'السنة الثانية ابتدائي': 'annee2',
-                'السنة الثالثة ابتدائي': 'annee3',
-                'السنة الرابعة ابتدائي': 'annee4',
-                'السنة الخامسة ابتدائي': 'annee5',
-                'السنة السادسة ابتدائي': 'annee6'
-            },
-            college: {
-                'السنة السابعة أساسي': 'annee7',
-                'السنة الثامنة أساسي': 'annee8',
-                'السنة التاسعة أساسي': 'annee9'
-            },
-            lycee: {
-                'السنة الأولى ثانوي': 'annee10',
-                'السنة الثانية ثانوي': 'annee11',
-                'السنة الثالثة ثانوي': 'annee12',
-                'السنة الرابعة ثانوي': 'annee13'
-            },
-            national: {
-                'مناظرات وطنية - كاباس': 'concours'
-            }
+            primaire: { 'السنة الأولى ابتدائي': 'annee1', 'السنة الثانية ابتدائي': 'annee2', 'السنة الثالثة ابتدائي': 'annee3', 'السنة الرابعة ابتدائي': 'annee4', 'السنة الخامسة ابتدائي': 'annee5', 'السنة السادسة ابتدائي': 'annee6' },
+            college: { 'السنة السابعة أساسي': 'annee7', 'السنة الثامنة أساسي': 'annee8', 'السنة التاسعة أساسي': 'annee9' },
+            lycee: { 'السنة الأولى ثانوي': 'annee10', 'السنة الثانية ثانوي': 'annee11', 'السنة الثالثة ثانوي': 'annee12', 'السنة الرابعة ثانوي': 'annee13' },
+            national: { 'مناظرات وطنية - كاباس': 'concours' }
         };
         
-        // المواد حسب المستوى
         const subjectsData = {
             primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
             college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
@@ -340,38 +300,13 @@
         };
         
         const folderNames = {
-            'اللغة العربية': 'arabe',
-            'الفرنسية': 'francais',
-            'الأنكليزية': 'anglais',
-            'الرياضيات': 'maths',
-            'إيقاظ علمي': 'eveil',
-            'الفيزياء': 'physique',
-            'العلوم الطبيعية': 'sciences',
-            'التكنولوجيا': 'technologie',
-            'français': 'francais',
-            'english': 'anglais',
-            'maths': 'maths',
-            'physique': 'physique',
-            'technique': 'technique',
-            'informatique': 'informatique',
-            'الإقتصاد والتصرف': 'economie'
+            'اللغة العربية': 'arabe', 'الفرنسية': 'francais', 'الأنكليزية': 'anglais', 'الرياضيات': 'maths', 'إيقاظ علمي': 'eveil',
+            'الفيزياء': 'physique', 'العلوم الطبيعية': 'sciences', 'التكنولوجيا': 'technologie', 'français': 'francais', 'english': 'anglais',
+            'maths': 'maths', 'physique': 'physique', 'technique': 'technique', 'informatique': 'informatique', 'الإقتصاد والتصرف': 'economie'
         };
         
-        const folderNamesAr = {
-            'cours': '📚 دروس',
-            'devoirs': '📝 فروض',
-            'examens': '📋 إمتحانات',
-            'videos': '🎥 فيديوهات تعليمية',
-            'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)'
-        };
-        
-        const folderIcons = {
-            'cours': 'fa-book',
-            'devoirs': 'fa-pencil-alt',
-            'examens': 'fa-file-alt',
-            'videos': 'fa-video',
-            'qcm': 'fa-question-circle'
-        };
+        const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
+        const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
         
         // ==================== دوال العرض ====================
         function showHome() {
@@ -397,17 +332,12 @@
             currentGradeName = gradeName;
             currentGrade = gradeFolders[level][gradeName];
             
-            // تحديد المواد حسب المستوى والسنة
-            if (level === 'lycee') {
-                currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
-            } else {
-                currentSubjects = subjectsData[level];
-            }
+            if (level === 'lycee') currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
+            else currentSubjects = subjectsData[level];
             
             document.getElementById('selectedLevelTitle').innerHTML = `📚 المواد التعليمية - ${gradeName}`;
             const grid = document.getElementById('subjectsGrid');
             grid.innerHTML = '';
-            
             currentSubjects.forEach(subject => {
                 const card = document.createElement('div');
                 card.className = 'grade-btn';
@@ -426,11 +356,9 @@
         function showFolders(subject) {
             currentSubject = subject;
             currentSubjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
-            
             document.getElementById('selectedFolderTitle').innerHTML = `📁 ${subject} - ${currentGradeName}`;
             const grid = document.getElementById('foldersGrid');
             grid.innerHTML = '';
-            
             const folders = resourceFolders[currentLevel];
             folders.forEach(folder => {
                 const card = document.createElement('div');
@@ -439,7 +367,6 @@
                 card.innerHTML = `<div class="resource-icon"><i class="fas ${folderIcons[folder]}"></i></div><div class="resource-content"><div class="resource-title">${folderNamesAr[folder]}</div></div>`;
                 grid.appendChild(card);
             });
-            
             document.getElementById('subjectsSection').classList.remove('active');
             document.getElementById('foldersSection').classList.add('active');
             document.getElementById('filesSection').classList.remove('active');
@@ -453,24 +380,21 @@
             document.getElementById('filesSection').classList.add('active');
             
             const folderPath = `fichiers/${currentLevel}/${currentGrade}/${currentSubjectFolder}/${folderType}/`;
-            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${folderPath}`;
+            const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
             
             try {
-                const response = await fetch(apiUrl, { headers: { 'Authorization': `token ${GITHUB_TOKEN}` } });
+                const response = await fetch(apiUrl);
                 const data = await response.json();
                 
                 if (response.ok && Array.isArray(data)) {
                     const pdfFiles = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.PDF'));
-                    if (pdfFiles.length === 0) {
-                        filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
-                        return;
-                    }
+                    if (pdfFiles.length === 0) { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; return; }
                     filesListDiv.innerHTML = '';
                     for (let i = 0; i < pdfFiles.length; i++) {
                         const file = pdfFiles[i];
                         const fileCard = document.createElement('div');
                         fileCard.className = 'file-card';
-                        const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${folderPath}${encodeURIComponent(file.name)}`;
+                        const rawUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${encodeURIComponent(file.name)}`;
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
                         fileCard.innerHTML = `
@@ -488,12 +412,8 @@
                         filesListDiv.appendChild(fileCard);
                         generateThumbnail(rawUrl, `thumb-${i}`);
                     }
-                } else {
-                    filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
-                }
-            } catch (error) {
-                filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>';
-            }
+                } else { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; }
+            } catch (error) { filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>'; }
         }
         
         async function generateThumbnail(pdfUrl, containerId) {
@@ -508,14 +428,8 @@
                 canvas.height = viewport.height;
                 await page.render({ canvasContext: context, viewport }).promise;
                 const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = '';
-                    canvas.className = 'thumbnail-canvas';
-                    container.appendChild(canvas);
-                }
-            } catch (error) {
-                console.error('Thumbnail error:', error);
-            }
+                if (container) { container.innerHTML = ''; canvas.className = 'thumbnail-canvas'; container.appendChild(canvas); }
+            } catch (error) { console.error('Thumbnail error:', error); }
         }
         
         async function viewFile(pdfUrl, fileName) {
@@ -539,9 +453,7 @@
                     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
                     container.appendChild(canvas);
                 }
-            } catch (error) {
-                container.innerHTML = '<div class="page-loading">❌ حدث خطأ في تحميل الملف</div>';
-            }
+            } catch (error) { container.innerHTML = '<div class="page-loading">❌ حدث خطأ في تحميل الملف</div>'; }
         }
         
         function closePDFViewer() { document.getElementById('pdfViewer').style.display = 'none'; }
@@ -555,21 +467,12 @@
             const level = document.getElementById('uploadLevel').value;
             const gradeSelect = document.getElementById('uploadGrade');
             let grades = [];
-            
             if (level === 'primaire') grades = ['السنة الأولى ابتدائي', 'السنة الثانية ابتدائي', 'السنة الثالثة ابتدائي', 'السنة الرابعة ابتدائي', 'السنة الخامسة ابتدائي', 'السنة السادسة ابتدائي'];
             else if (level === 'college') grades = ['السنة السابعة أساسي', 'السنة الثامنة أساسي', 'السنة التاسعة أساسي'];
             else if (level === 'lycee') grades = ['السنة الأولى ثانوي', 'السنة الثانية ثانوي', 'السنة الثالثة ثانوي', 'السنة الرابعة ثانوي'];
             else if (level === 'national') grades = ['مناظرات وطنية - كاباس'];
-            
             gradeSelect.innerHTML = '<option value="">اختر السنة</option>';
-            grades.forEach(grade => {
-                const option = document.createElement('option');
-                option.value = grade;
-                option.textContent = grade;
-                gradeSelect.appendChild(option);
-            });
-            
-            // إعادة تعيين المواد ونوع المورد
+            grades.forEach(grade => { const option = document.createElement('option'); option.value = grade; option.textContent = grade; gradeSelect.appendChild(option); });
             document.getElementById('uploadSubject').innerHTML = '<option value="">اختر السنة أولاً</option>';
             document.getElementById('uploadFolder').innerHTML = '<option value="">اختر نوع المورد</option>';
         }
@@ -579,41 +482,29 @@
             const grade = document.getElementById('uploadGrade').value;
             const subjectSelect = document.getElementById('uploadSubject');
             let subjects = [];
-            
             if (level === 'lycee') {
                 if (grade === 'السنة الأولى ثانوي') subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'];
                 else subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'];
             } else if (level === 'primaire') subjects = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'];
             else if (level === 'college') subjects = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'];
             else if (level === 'national') subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique'];
-            
             subjectSelect.innerHTML = '<option value="">اختر المادة</option>';
-            subjects.forEach(subject => {
-                const option = document.createElement('option');
-                option.value = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
-                option.textContent = subject;
-                subjectSelect.appendChild(option);
-            });
+            subjects.forEach(subject => { const option = document.createElement('option'); option.value = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase(); option.textContent = subject; subjectSelect.appendChild(option); });
         }
         
         function updateFoldersUpload() {
             const level = document.getElementById('uploadLevel').value;
             const folderSelect = document.getElementById('uploadFolder');
-            if (level === 'national') {
-                folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="examens">📋 إمتحانات</option><option value="qcm">❓ اختبارات متعددة الإحتمالات (Qcm)</option>';
-            } else if (level) {
-                folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="cours">📚 دروس</option><option value="devoirs">📝 فروض</option><option value="examens">📋 اختبارات</option><option value="videos">🎥 فيديوهات تعليمية</option>';
-            } else {
-                folderSelect.innerHTML = '<option value="">اختر نوع المورد</option>';
-            }
+            if (level === 'national') folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="examens">📋 إمتحانات</option><option value="qcm">❓ اختبارات متعددة الإحتمالات (Qcm)</option>';
+            else if (level) folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="cours">📚 دروس</option><option value="devoirs">📝 فروض</option><option value="examens">📋 اختبارات</option><option value="videos">🎥 فيديوهات تعليمية</option>';
+            else folderSelect.innerHTML = '<option value="">اختر نوع المورد</option>';
         }
         
+        // رفع الملف إلى localStorage
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const level = document.getElementById('uploadLevel').value;
             const grade = document.getElementById('uploadGrade').value;
-            const gradeFolder = gradeFolders[level][grade];
             const subject = document.getElementById('uploadSubject').options[document.getElementById('uploadSubject').selectedIndex]?.textContent;
             const subjectValue = document.getElementById('uploadSubject').value;
             const folder = document.getElementById('uploadFolder').value;
@@ -628,197 +519,158 @@
                 return;
             }
             
-            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف للمراجعة...</div>';
+            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف...</div>';
             
             const reader = new FileReader();
-            reader.readAsDataURL(file);
-            
-            reader.onload = async function() {
-                const base64Content = reader.result.split(',')[1];
-                const filePath = `fichiers/pending/files/${Date.now()}_${fileName.replace(/[^a-zA-Z0-9.-]/g, '_')}.pdf`;
-                
-                const metadata = {
+            reader.onload = function() {
+                const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
+                pendingFiles.push({
+                    id: Date.now(),
+                    fileData: reader.result,
+                    fileName: fileName,
                     originalName: file.name,
-                    displayName: fileName,
                     teacherName: teacherName,
                     level: level,
                     grade: grade,
-                    gradeFolder: gradeFolder,
+                    gradeFolder: gradeFolders[level][grade],
                     subject: subject,
                     subjectValue: subjectValue,
                     folder: folder,
                     folderName: folderName,
-                    date: new Date().toISOString(),
-                    status: 'pending'
-                };
-                
-                try {
-                    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `رفع ملف: ${fileName}`, content: base64Content, branch: 'main' })
-                    });
-                    
-                    const metadataPath = `fichiers/pending/metadata/${Date.now()}_metadata.json`;
-                    const metadataContent = btoa(unescape(encodeURIComponent(JSON.stringify(metadata, null, 2))));
-                    
-                    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${metadataPath}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `إضافة metadata`, content: metadataContent, branch: 'main' })
-                    });
-                    
-                    messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
-                    document.getElementById('uploadForm').reset();
-                    
-                } catch (error) {
-                    messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}</div>`;
-                }
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
+                messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
+                document.getElementById('uploadForm').reset();
+                if (isAdmin && document.getElementById('pendingSection').classList.contains('active')) loadPendingFiles();
             };
+            reader.readAsDataURL(file);
         });
         
-        async function loadPendingFiles() {
+        // تحميل الملفات المعلقة
+        function loadPendingFiles() {
             const container = document.getElementById('pendingList');
-            container.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات المعلقة...</div>';
-            
-            try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                
-                if (!response.ok) { container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>'; return; }
-                
-                const files = await response.json();
-                if (!Array.isArray(files) || files.length === 0) { container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>'; return; }
-                
-                container.innerHTML = '';
-                for (const file of files) {
-                    const contentResponse = await fetch(file.download_url);
-                    const metadata = await contentResponse.json();
-                    
-                    const item = document.createElement('div');
-                    item.className = 'pending-item';
-                    item.innerHTML = `
-                        <div class="pending-info">
-                            <p><strong>📄 ${metadata.displayName}</strong></p>
-                            <p>📁 ${metadata.level} / ${metadata.grade} / ${metadata.subject} / ${metadata.folderName}</p>
-                            <p>👤 ${metadata.teacherName}</p>
-                            <p>📅 ${new Date(metadata.date).toLocaleString('ar-TN')}</p>
-                        </div>
-                        <div class="pending-actions">
-                            <button class="preview-btn" onclick="alert('سيتم إضافة معاينة الملف قريباً')"><i class="fas fa-eye"></i> معاينة</button>
-                            <button class="approve-btn" onclick="approveFile('${file.name}')"><i class="fas fa-check"></i> موافقة</button>
-                            <button class="reject-btn" onclick="rejectFile('${file.name}')"><i class="fas fa-times"></i> رفض</button>
-                        </div>
-                    `;
-                    container.appendChild(item);
-                }
-            } catch (error) {
-                container.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات</div>';
-            }
+            const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
+            if (pendingFiles.length === 0) { container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>'; return; }
+            container.innerHTML = '';
+            pendingFiles.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'pending-item';
+                item.innerHTML = `
+                    <div class="pending-info">
+                        <p><strong>📄 ${file.fileName}</strong></p>
+                        <p>📁 ${file.level} / ${file.grade} / ${file.subject} / ${file.folderName}</p>
+                        <p>👤 ${file.teacherName}</p>
+                        <p>📅 ${new Date(file.date).toLocaleString('ar-TN')}</p>
+                    </div>
+                    <div class="pending-actions">
+                        <button class="preview-btn" onclick="previewPendingFile('${file.id}')"><i class="fas fa-eye"></i> معاينة</button>
+                        <button class="approve-btn" onclick="approveFile('${file.id}')"><i class="fas fa-check"></i> موافقة</button>
+                        <button class="reject-btn" onclick="rejectFile('${file.id}')"><i class="fas fa-times"></i> رفض</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
         }
         
-        async function approveFile(metadataFileName) {
-            if (!confirm('هل أنت متأكد من الموافقة على هذا الملف؟')) return;
+        function previewPendingFile(id) {
+            const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
+            const file = pendingFiles.find(f => f.id == id);
+            if (file && file.fileData) viewFile(file.fileData, file.fileName);
+        }
+        
+        // الموافقة على الملف ورفعه إلى GitHub تلقائياً
+        async function approveFile(id) {
+            const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
+            const file = pendingFiles.find(f => f.id == id);
+            
+            if (!file) return;
+            
+            // التحقق من وجود التوكن
+            let githubToken = localStorage.getItem('github_token');
+            if (!githubToken) {
+                githubToken = prompt('🔐 لإضافة الملف إلى GitHub، الرجاء إدخال GitHub Token الخاص بك:\n(يمكنك إنشاؤه من Settings → Developer settings → Personal access tokens)');
+                if (githubToken && githubToken.startsWith('ghp_')) {
+                    localStorage.setItem('github_token', githubToken);
+                } else {
+                    alert('❌ التوكن غير صالح. يجب أن يبدأ بـ ghp_');
+                    return;
+                }
+            }
+            
+            if (!confirm(`هل أنت متأكد من الموافقة على الملف: ${file.fileName}؟\nسيتم رفعه إلى GitHub مباشرة.`)) return;
+            
+            const messageDiv = document.getElementById('uploadMessage');
+            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف إلى GitHub...</div>';
             
             try {
-                const metadataResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata/${metadataFileName}`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const metadataData = await metadataResponse.json();
-                const metadata = JSON.parse(atob(metadataData.content));
+                // استخراج البيانات من Base64
+                const base64Data = file.fileData.split(',')[1];
                 
-                const filesResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/files`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const files = await filesResponse.json();
-                const pdfFile = files.find(f => f.name.includes(metadata.originalName.replace(/[^a-zA-Z0-9.-]/g, '_')));
+                // تحديد المسار النهائي
+                const finalPath = `fichiers/${file.level}/${file.gradeFolder}/${file.subjectValue}/${file.folder}/${file.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}.pdf`;
                 
-                if (!pdfFile) throw new Error('لم يتم العثور على ملف PDF');
-                
-                const pdfResponse = await fetch(pdfFile.download_url);
-                const pdfBlob = await pdfResponse.blob();
-                const pdfBase64 = await new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.readAsDataURL(pdfBlob);
-                });
-                
-                const finalPath = `fichiers/${metadata.level}/${metadata.gradeFolder}/${metadata.subjectValue}/${metadata.folder}/${metadata.displayName.replace(/[^a-zA-Z0-9.-]/g, '_')}.pdf`;
-                
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${finalPath}`, {
+                // رفع الملف إلى GitHub
+                const uploadResponse = await fetch(`https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${finalPath}`, {
                     method: 'PUT',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `موافقة على إضافة الملف: ${metadata.displayName}`, content: pdfBase64, branch: 'main' })
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `إضافة ملف: ${file.fileName} من قبل الأستاذ ${file.teacherName}`,
+                        content: base64Data,
+                        branch: 'main'
+                    })
                 });
                 
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${pdfFile.path}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `حذف الملف بعد الموافقة`, sha: pdfFile.sha, branch: 'main' })
-                });
+                if (!uploadResponse.ok) {
+                    const error = await uploadResponse.json();
+                    throw new Error(error.message || 'فشل رفع الملف');
+                }
                 
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata/${metadataFileName}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `حذف metadata`, sha: metadataData.sha, branch: 'main' })
-                });
+                // حذف الملف من قائمة الانتظار
+                const newPending = pendingFiles.filter(f => f.id != id);
+                localStorage.setItem('pendingFiles', JSON.stringify(newPending));
                 
-                alert('✅ تمت الموافقة على الملف وإضافته إلى المنصة');
+                messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تمت الموافقة على الملف ورفعه إلى GitHub بنجاح!<br>📄 ${file.fileName}<br>📁 ${finalPath}</div>`;
                 loadPendingFiles();
                 
+                // تحديث قائمة الملفات إذا كانت مفتوحة
+                if (document.getElementById('filesSection').classList.contains('active')) {
+                    showFiles(document.getElementById('filesSection').getAttribute('data-folder'));
+                }
+                
             } catch (error) {
-                alert('❌ حدث خطأ: ' + error.message);
+                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}<br>يرجى التأكد من صحة التوكن والمجلدات.</div>`;
+                // إذا كان الخطأ بسبب التوكن، نزيله ليطلب مرة أخرى
+                if (error.message.includes('401') || error.message.includes('Bad credentials')) {
+                    localStorage.removeItem('github_token');
+                }
             }
         }
         
-        async function rejectFile(metadataFileName) {
-            if (!confirm('هل أنت متأكد من رفض هذا الملف؟')) return;
-            
-            try {
-                const metadataResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata/${metadataFileName}`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const metadataData = await metadataResponse.json();
-                const metadata = JSON.parse(atob(metadataData.content));
-                
-                const filesResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/files`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const files = await filesResponse.json();
-                const pdfFile = files.find(f => f.name.includes(metadata.originalName.replace(/[^a-zA-Z0-9.-]/g, '_')));
-                
-                if (pdfFile) {
-                    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${pdfFile.path}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `رفض الملف`, sha: pdfFile.sha, branch: 'main' })
-                    });
-                }
-                
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata/${metadataFileName}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `رفض الملف وحذف metadata`, sha: metadataData.sha, branch: 'main' })
-                });
-                
+        function rejectFile(id) {
+            if (confirm('هل أنت متأكد من رفض هذا الملف؟')) {
+                const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
+                const newPending = pendingFiles.filter(f => f.id != id);
+                localStorage.setItem('pendingFiles', JSON.stringify(newPending));
                 alert('❌ تم رفض الملف');
                 loadPendingFiles();
-                
-            } catch (error) {
-                alert('❌ حدث خطأ: ' + error.message);
             }
         }
         
         function showPending() {
             if (!isAdmin) {
                 const password = prompt('🔐 أدخل كلمة مرور المدير للوصول إلى لوحة المراجعة:');
-                if (password === 'admin123') {
-                    isAdmin = true;
-                    document.getElementById('adminLink').style.display = 'block';
+                if (password === 'admin123') { 
+                    isAdmin = true; 
+                    document.getElementById('adminLink').style.display = 'block'; 
                     alert('✅ مرحباً بك في لوحة التحكم');
-                } else if (password !== null) { alert('❌ كلمة المرور غير صحيحة'); return; }
-                else { return; }
+                } else if (password !== null) { 
+                    alert('❌ كلمة المرور غير صحيحة'); 
+                    return; 
+                } else return;
             }
             document.getElementById('levelsSection').style.display = 'none';
             document.getElementById('subjectsSection').classList.remove('active');
@@ -829,7 +681,6 @@
             loadPendingFiles();
         }
         
-        // ربط الأحداث
         document.getElementById('uploadLevel').addEventListener('change', function() { updateGrades(); });
         document.getElementById('uploadGrade').addEventListener('change', function() { updateSubjectsUpload(); });
         document.getElementById('uploadSubject').addEventListener('change', function() { updateFoldersUpload(); });
