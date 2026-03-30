@@ -16,9 +16,13 @@
         .navbar { background: rgba(255,255,255,0.95); box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 0; }
         .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
         .logo { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links { display: flex; gap: 30px; list-style: none; align-items: center; }
         .nav-links a { text-decoration: none; color: #333; font-weight: 500; transition: 0.3s; cursor: pointer; }
         .nav-links a:hover { color: #667eea; }
+        .login-btn { background: #667eea; color: white !important; padding: 8px 16px; border-radius: 8px; }
+        .login-btn:hover { background: #5a67d8; color: white !important; }
+        .review-btn { background: #27ae60; color: white !important; padding: 8px 16px; border-radius: 8px; }
+        .review-btn:hover { background: #219653; }
         .hero { padding: 120px 20px 60px; text-align: center; color: white; }
         .hero h1 { font-size: 48px; margin-bottom: 20px; }
         .hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto; }
@@ -88,35 +92,12 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 16px; }
-        .form-group small { display: block; margin-top: 5px; color: #7f8c8d; font-size: 12px; }
-        
         .pending-item { border: 1px solid #eee; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .pending-info { flex: 2; }
         .pending-actions { display: flex; gap: 10px; }
         .approve-btn { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
         .reject-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
         .preview-btn { background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
-        
-        .token-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .token-modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -127,7 +108,8 @@
                 <li><a onclick="showHome()">الرئيسية</a></li>
                 <li><a onclick="showHome()">الموارد</a></li>
                 <li><a onclick="showUpload()">📤 رفع ملف</a></li>
-                <li><a onclick="showPending()" id="adminLink" style="display:none">📋 المراجعة</a></li>
+                <li><a id="loginBtn" class="login-btn" onclick="showLogin()">🔐 تسجيل دخول</a></li>
+                <li><a id="reviewBtn" style="display:none" class="review-btn" onclick="showPending()">📋 المراجعة</a></li>
                 <li><a href="#">تواصل معنا</a></li>
             </ul>
         </div>
@@ -146,7 +128,7 @@
         <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button></div></div>
     </section>
     
-    <!-- قسم المواد (بعد اختيار السنة) -->
+    <!-- قسم المواد -->
     <section class="resources-section" id="subjectsSection">
         <div class="level-card">
             <h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2>
@@ -257,7 +239,6 @@
         let currentLevel = '', currentGradeName = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
         
-        // المواد حسب المستوى
         const subjectsData = {
             primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
             college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
@@ -279,38 +260,13 @@
         };
         
         const folderNames = {
-            'اللغة العربية': 'arabe',
-            'الفرنسية': 'francais',
-            'الأنكليزية': 'anglais',
-            'الرياضيات': 'maths',
-            'إيقاظ علمي': 'eveil',
-            'الفيزياء': 'physique',
-            'العلوم الطبيعية': 'sciences',
-            'التكنولوجيا': 'technologie',
-            'français': 'francais',
-            'english': 'anglais',
-            'maths': 'maths',
-            'physique': 'physique',
-            'technique': 'technique',
-            'informatique': 'informatique',
-            'الإقتصاد والتصرف': 'economie'
+            'اللغة العربية': 'arabe', 'الفرنسية': 'francais', 'الأنكليزية': 'anglais', 'الرياضيات': 'maths', 'إيقاظ علمي': 'eveil',
+            'الفيزياء': 'physique', 'العلوم الطبيعية': 'sciences', 'التكنولوجيا': 'technologie', 'français': 'francais', 'english': 'anglais',
+            'maths': 'maths', 'physique': 'physique', 'technique': 'technique', 'informatique': 'informatique', 'الإقتصاد والتصرف': 'economie'
         };
         
-        const folderNamesAr = {
-            'cours': '📚 دروس',
-            'devoirs': '📝 فروض',
-            'examens': '📋 إمتحانات',
-            'videos': '🎥 فيديوهات تعليمية',
-            'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)'
-        };
-        
-        const folderIcons = {
-            'cours': 'fa-book',
-            'devoirs': 'fa-pencil-alt',
-            'examens': 'fa-file-alt',
-            'videos': 'fa-video',
-            'qcm': 'fa-question-circle'
-        };
+        const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
+        const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
         
         // ==================== دوال العرض ====================
         function showHome() {
@@ -329,6 +285,18 @@
             document.getElementById('filesSection').classList.remove('active');
             document.getElementById('uploadSection').classList.add('active');
             document.getElementById('pendingSection').classList.remove('active');
+        }
+        
+        function showLogin() {
+            const password = prompt('🔐 أدخل كلمة مرور المدير للوصول إلى لوحة المراجعة:');
+            if (password === 'admin123') {
+                isAdmin = true;
+                document.getElementById('reviewBtn').style.display = 'block';
+                document.getElementById('loginBtn').style.display = 'none';
+                alert('✅ مرحباً بك في لوحة التحكم');
+            } else if (password !== null) {
+                alert('❌ كلمة المرور غير صحيحة');
+            }
         }
         
         function showSubjects(level, gradeName) {
@@ -386,7 +354,6 @@
             document.getElementById('foldersSection').classList.remove('active');
             document.getElementById('filesSection').classList.add('active');
             
-            // المسار القديم البسيط: fichiers/[level]/[subject]/[folder]/
             const folderPath = `fichiers/${currentLevel}/${currentSubjectFolder}/${folderType}/`;
             const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
             
@@ -427,7 +394,6 @@
                     filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
                 }
             } catch (error) {
-                console.error('Error:', error);
                 filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>';
             }
         }
@@ -444,14 +410,8 @@
                 canvas.height = viewport.height;
                 await page.render({ canvasContext: context, viewport }).promise;
                 const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = '';
-                    canvas.className = 'thumbnail-canvas';
-                    container.appendChild(canvas);
-                }
-            } catch (error) {
-                console.error('Thumbnail error:', error);
-            }
+                if (container) { container.innerHTML = ''; canvas.className = 'thumbnail-canvas'; container.appendChild(canvas); }
+            } catch (error) { console.error('Thumbnail error:', error); }
         }
         
         async function viewFile(pdfUrl, fileName) {
@@ -475,9 +435,7 @@
                     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
                     container.appendChild(canvas);
                 }
-            } catch (error) {
-                container.innerHTML = '<div class="page-loading">❌ حدث خطأ في تحميل الملف</div>';
-            }
+            } catch (error) { container.innerHTML = '<div class="page-loading">❌ حدث خطأ في تحميل الملف</div>'; }
         }
         
         function closePDFViewer() { document.getElementById('pdfViewer').style.display = 'none'; }
@@ -516,7 +474,6 @@
             }
         }
         
-        // رفع الملف إلى localStorage
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const level = document.getElementById('uploadLevel').value;
@@ -560,7 +517,6 @@
             reader.readAsDataURL(file);
         });
         
-        // تحميل الملفات المعلقة
         function loadPendingFiles() {
             const container = document.getElementById('pendingList');
             const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
@@ -592,11 +548,9 @@
             if (file && file.fileData) viewFile(file.fileData, file.fileName);
         }
         
-        // الموافقة على الملف ورفعه إلى GitHub تلقائياً
         async function approveFile(id) {
             const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
             const file = pendingFiles.find(f => f.id == id);
-            
             if (!file) return;
             
             let githubToken = localStorage.getItem('github_token');
@@ -610,54 +564,39 @@
                 }
             }
             
-            if (!confirm(`هل أنت متأكد من الموافقة على الملف: ${file.fileName}؟\nسيتم رفعه إلى GitHub مباشرة.`)) return;
+            if (!confirm(`هل أنت متأكد من الموافقة على الملف: ${file.fileName}؟`)) return;
             
             const messageDiv = document.getElementById('uploadMessage');
             messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف إلى GitHub...</div>';
             
             try {
                 const base64Data = file.fileData.split(',')[1];
-                
-                // المسار القديم البسيط: fichiers/[level]/[subject]/[folder]/
                 const finalPath = `fichiers/${file.level}/${file.subjectValue}/${file.folder}/${file.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}.pdf`;
                 
                 const uploadResponse = await fetch(`https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${finalPath}`, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `إضافة ملف: ${file.fileName} من قبل الأستاذ ${file.teacherName}`,
-                        content: base64Data,
-                        branch: 'main'
-                    })
+                    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `إضافة ملف: ${file.fileName}`, content: base64Data, branch: 'main' })
                 });
                 
-                if (!uploadResponse.ok) {
-                    const error = await uploadResponse.json();
-                    throw new Error(error.message || 'فشل رفع الملف');
-                }
+                if (!uploadResponse.ok) throw new Error('فشل رفع الملف');
                 
                 const newPending = pendingFiles.filter(f => f.id != id);
                 localStorage.setItem('pendingFiles', JSON.stringify(newPending));
                 
-                messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تمت الموافقة على الملف ورفعه إلى GitHub بنجاح!<br>📄 ${file.fileName}<br>📁 ${finalPath}</div>`;
+                messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تمت الموافقة على الملف ورفعه إلى GitHub بنجاح!</div>`;
                 loadPendingFiles();
                 
             } catch (error) {
-                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}<br>يرجى التأكد من صحة التوكن والمجلدات.</div>`;
-                if (error.message.includes('401') || error.message.includes('Bad credentials')) {
-                    localStorage.removeItem('github_token');
-                }
+                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}</div>`;
+                if (error.message.includes('401')) localStorage.removeItem('github_token');
             }
         }
         
         function rejectFile(id) {
             if (confirm('هل أنت متأكد من رفض هذا الملف؟')) {
                 const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
-                const newPending = pendingFiles.filter(f => f.id != id);
-                localStorage.setItem('pendingFiles', JSON.stringify(newPending));
+                localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles.filter(f => f.id != id)));
                 alert('❌ تم رفض الملف');
                 loadPendingFiles();
             }
@@ -665,15 +604,8 @@
         
         function showPending() {
             if (!isAdmin) {
-                const password = prompt('🔐 أدخل كلمة مرور المدير للوصول إلى لوحة المراجعة:');
-                if (password === 'admin123') { 
-                    isAdmin = true; 
-                    document.getElementById('adminLink').style.display = 'block'; 
-                    alert('✅ مرحباً بك في لوحة التحكم');
-                } else if (password !== null) { 
-                    alert('❌ كلمة المرور غير صحيحة'); 
-                    return; 
-                } else return;
+                alert('⚠️ الرجاء تسجيل الدخول أولاً عبر زر "تسجيل دخول"');
+                return;
             }
             document.getElementById('levelsSection').style.display = 'none';
             document.getElementById('subjectsSection').classList.remove('active');
@@ -685,7 +617,6 @@
         }
         
         document.getElementById('uploadLevel').addEventListener('change', function() { updateSubjectsUpload(); updateFoldersUpload(); });
-        document.getElementById('adminLink').addEventListener('click', function(e) { e.preventDefault(); showPending(); });
     </script>
 </body>
 </html>
