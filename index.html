@@ -117,14 +117,6 @@
             width: 90%;
             text-align: center;
         }
-        .token-modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-family: monospace;
-        }
     </style>
 </head>
 <body>
@@ -148,10 +140,10 @@
     
     <!-- مستويات التعليم الرئيسية -->
     <section class="levels-section" id="levelsSection">
-        <div class="level-card"><h2 class="level-title">🏫 التعليم الابتدائي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button></div></div>
-        <div class="level-card"><h2 class="level-title">📖 التعليم الإعدادي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button><button class="grade-btn" onclick="showGrades('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button><button class="grade-btn" onclick="showGrades('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button></div></div>
-        <div class="level-card"><h2 class="level-title">🎓 التعليم الثانوي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button></div></div>
-        <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button></div></div>
+        <div class="level-card"><h2 class="level-title">🏫 التعليم الابتدائي</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الأولى ابتدائي')">السنة الأولى</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثانية ابتدائي')">السنة الثانية</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الثالثة ابتدائي')">السنة الثالثة</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الرابعة ابتدائي')">السنة الرابعة</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة الخامسة ابتدائي')">السنة الخامسة</button><button class="grade-btn" onclick="showSubjects('primaire', 'السنة السادسة ابتدائي')">السنة السادسة</button></div></div>
+        <div class="level-card"><h2 class="level-title">📖 التعليم الإعدادي</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('college', 'السنة السابعة أساسي')">السنة السابعة أساسي</button><button class="grade-btn" onclick="showSubjects('college', 'السنة الثامنة أساسي')">السنة الثامنة أساسي</button><button class="grade-btn" onclick="showSubjects('college', 'السنة التاسعة أساسي')">السنة التاسعة أساسي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🎓 التعليم الثانوي</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الأولى ثانوي')">السنة الأولى ثانوي</button><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثانية ثانوي')">السنة الثانية ثانوي</button><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الثالثة ثانوي')">السنة الثالثة ثانوي</button><button class="grade-btn" onclick="showSubjects('lycee', 'السنة الرابعة ثانوي')">السنة الرابعة ثانوي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showSubjects('national', 'مناظرات وطنية - كاباس')">المناظرات الوطنية والكاباس</button></div></div>
     </section>
     
     <!-- قسم المواد (بعد اختيار السنة) -->
@@ -199,16 +191,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>📖 السنة / القسم *</label>
-                        <select id="uploadGrade" required>
-                            <option value="">اختر المستوى أولاً</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
                         <label>📚 المادة *</label>
                         <select id="uploadSubject" required>
-                            <option value="">اختر السنة أولاً</option>
+                            <option value="">اختر المستوى أولاً</option>
                         </select>
                     </div>
                     
@@ -269,16 +254,10 @@
     
     <script>
         // ==================== البيانات ====================
-        let currentLevel = '', currentGrade = '', currentGradeName = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
+        let currentLevel = '', currentGradeName = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
         
-        const gradeFolders = {
-            primaire: { 'السنة الأولى ابتدائي': 'annee1', 'السنة الثانية ابتدائي': 'annee2', 'السنة الثالثة ابتدائي': 'annee3', 'السنة الرابعة ابتدائي': 'annee4', 'السنة الخامسة ابتدائي': 'annee5', 'السنة السادسة ابتدائي': 'annee6' },
-            college: { 'السنة السابعة أساسي': 'annee7', 'السنة الثامنة أساسي': 'annee8', 'السنة التاسعة أساسي': 'annee9' },
-            lycee: { 'السنة الأولى ثانوي': 'annee10', 'السنة الثانية ثانوي': 'annee11', 'السنة الثالثة ثانوي': 'annee12', 'السنة الرابعة ثانوي': 'annee13' },
-            national: { 'مناظرات وطنية - كاباس': 'concours' }
-        };
-        
+        // المواد حسب المستوى
         const subjectsData = {
             primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
             college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
@@ -300,13 +279,38 @@
         };
         
         const folderNames = {
-            'اللغة العربية': 'arabe', 'الفرنسية': 'francais', 'الأنكليزية': 'anglais', 'الرياضيات': 'maths', 'إيقاظ علمي': 'eveil',
-            'الفيزياء': 'physique', 'العلوم الطبيعية': 'sciences', 'التكنولوجيا': 'technologie', 'français': 'francais', 'english': 'anglais',
-            'maths': 'maths', 'physique': 'physique', 'technique': 'technique', 'informatique': 'informatique', 'الإقتصاد والتصرف': 'economie'
+            'اللغة العربية': 'arabe',
+            'الفرنسية': 'francais',
+            'الأنكليزية': 'anglais',
+            'الرياضيات': 'maths',
+            'إيقاظ علمي': 'eveil',
+            'الفيزياء': 'physique',
+            'العلوم الطبيعية': 'sciences',
+            'التكنولوجيا': 'technologie',
+            'français': 'francais',
+            'english': 'anglais',
+            'maths': 'maths',
+            'physique': 'physique',
+            'technique': 'technique',
+            'informatique': 'informatique',
+            'الإقتصاد والتصرف': 'economie'
         };
         
-        const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
-        const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
+        const folderNamesAr = {
+            'cours': '📚 دروس',
+            'devoirs': '📝 فروض',
+            'examens': '📋 إمتحانات',
+            'videos': '🎥 فيديوهات تعليمية',
+            'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)'
+        };
+        
+        const folderIcons = {
+            'cours': 'fa-book',
+            'devoirs': 'fa-pencil-alt',
+            'examens': 'fa-file-alt',
+            'videos': 'fa-video',
+            'qcm': 'fa-question-circle'
+        };
         
         // ==================== دوال العرض ====================
         function showHome() {
@@ -327,13 +331,15 @@
             document.getElementById('pendingSection').classList.remove('active');
         }
         
-        function showGrades(level, gradeName) {
+        function showSubjects(level, gradeName) {
             currentLevel = level;
             currentGradeName = gradeName;
-            currentGrade = gradeFolders[level][gradeName];
             
-            if (level === 'lycee') currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
-            else currentSubjects = subjectsData[level];
+            if (level === 'lycee') {
+                currentSubjects = lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'];
+            } else {
+                currentSubjects = subjectsData[level];
+            }
             
             document.getElementById('selectedLevelTitle').innerHTML = `📚 المواد التعليمية - ${gradeName}`;
             const grid = document.getElementById('subjectsGrid');
@@ -356,6 +362,7 @@
         function showFolders(subject) {
             currentSubject = subject;
             currentSubjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
+            
             document.getElementById('selectedFolderTitle').innerHTML = `📁 ${subject} - ${currentGradeName}`;
             const grid = document.getElementById('foldersGrid');
             grid.innerHTML = '';
@@ -379,7 +386,8 @@
             document.getElementById('foldersSection').classList.remove('active');
             document.getElementById('filesSection').classList.add('active');
             
-            const folderPath = `fichiers/${currentLevel}/${currentGrade}/${currentSubjectFolder}/${folderType}/`;
+            // المسار القديم البسيط: fichiers/[level]/[subject]/[folder]/
+            const folderPath = `fichiers/${currentLevel}/${currentSubjectFolder}/${folderType}/`;
             const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
             
             try {
@@ -388,7 +396,10 @@
                 
                 if (response.ok && Array.isArray(data)) {
                     const pdfFiles = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.PDF'));
-                    if (pdfFiles.length === 0) { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; return; }
+                    if (pdfFiles.length === 0) {
+                        filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
+                        return;
+                    }
                     filesListDiv.innerHTML = '';
                     for (let i = 0; i < pdfFiles.length; i++) {
                         const file = pdfFiles[i];
@@ -412,8 +423,13 @@
                         filesListDiv.appendChild(fileCard);
                         generateThumbnail(rawUrl, `thumb-${i}`);
                     }
-                } else { filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>'; }
-            } catch (error) { filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>'; }
+                } else {
+                    filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>';
+            }
         }
         
         async function generateThumbnail(pdfUrl, containerId) {
@@ -428,8 +444,14 @@
                 canvas.height = viewport.height;
                 await page.render({ canvasContext: context, viewport }).promise;
                 const container = document.getElementById(containerId);
-                if (container) { container.innerHTML = ''; canvas.className = 'thumbnail-canvas'; container.appendChild(canvas); }
-            } catch (error) { console.error('Thumbnail error:', error); }
+                if (container) {
+                    container.innerHTML = '';
+                    canvas.className = 'thumbnail-canvas';
+                    container.appendChild(canvas);
+                }
+            } catch (error) {
+                console.error('Thumbnail error:', error);
+            }
         }
         
         async function viewFile(pdfUrl, fileName) {
@@ -453,7 +475,9 @@
                     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
                     container.appendChild(canvas);
                 }
-            } catch (error) { container.innerHTML = '<div class="page-loading">❌ حدث خطأ في تحميل الملف</div>'; }
+            } catch (error) {
+                container.innerHTML = '<div class="page-loading">❌ حدث خطأ في تحميل الملف</div>';
+            }
         }
         
         function closePDFViewer() { document.getElementById('pdfViewer').style.display = 'none'; }
@@ -463,48 +487,39 @@
         function backToFolders() { document.getElementById('foldersSection').classList.add('active'); document.getElementById('filesSection').classList.remove('active'); }
         
         // ==================== دوال الرفع والمراجعة ====================
-        function updateGrades() {
-            const level = document.getElementById('uploadLevel').value;
-            const gradeSelect = document.getElementById('uploadGrade');
-            let grades = [];
-            if (level === 'primaire') grades = ['السنة الأولى ابتدائي', 'السنة الثانية ابتدائي', 'السنة الثالثة ابتدائي', 'السنة الرابعة ابتدائي', 'السنة الخامسة ابتدائي', 'السنة السادسة ابتدائي'];
-            else if (level === 'college') grades = ['السنة السابعة أساسي', 'السنة الثامنة أساسي', 'السنة التاسعة أساسي'];
-            else if (level === 'lycee') grades = ['السنة الأولى ثانوي', 'السنة الثانية ثانوي', 'السنة الثالثة ثانوي', 'السنة الرابعة ثانوي'];
-            else if (level === 'national') grades = ['مناظرات وطنية - كاباس'];
-            gradeSelect.innerHTML = '<option value="">اختر السنة</option>';
-            grades.forEach(grade => { const option = document.createElement('option'); option.value = grade; option.textContent = grade; gradeSelect.appendChild(option); });
-            document.getElementById('uploadSubject').innerHTML = '<option value="">اختر السنة أولاً</option>';
-            document.getElementById('uploadFolder').innerHTML = '<option value="">اختر نوع المورد</option>';
-        }
-        
         function updateSubjectsUpload() {
             const level = document.getElementById('uploadLevel').value;
-            const grade = document.getElementById('uploadGrade').value;
             const subjectSelect = document.getElementById('uploadSubject');
             let subjects = [];
-            if (level === 'lycee') {
-                if (grade === 'السنة الأولى ثانوي') subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'];
-                else subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'];
-            } else if (level === 'primaire') subjects = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'];
+            if (level === 'primaire') subjects = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'];
             else if (level === 'college') subjects = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'];
+            else if (level === 'lycee') subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'];
             else if (level === 'national') subjects = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique'];
             subjectSelect.innerHTML = '<option value="">اختر المادة</option>';
-            subjects.forEach(subject => { const option = document.createElement('option'); option.value = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase(); option.textContent = subject; subjectSelect.appendChild(option); });
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
+                option.textContent = subject;
+                subjectSelect.appendChild(option);
+            });
         }
         
         function updateFoldersUpload() {
             const level = document.getElementById('uploadLevel').value;
             const folderSelect = document.getElementById('uploadFolder');
-            if (level === 'national') folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="examens">📋 إمتحانات</option><option value="qcm">❓ اختبارات متعددة الإحتمالات (Qcm)</option>';
-            else if (level) folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="cours">📚 دروس</option><option value="devoirs">📝 فروض</option><option value="examens">📋 اختبارات</option><option value="videos">🎥 فيديوهات تعليمية</option>';
-            else folderSelect.innerHTML = '<option value="">اختر نوع المورد</option>';
+            if (level === 'national') {
+                folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="examens">📋 إمتحانات</option><option value="qcm">❓ اختبارات متعددة الإحتمالات (Qcm)</option>';
+            } else if (level) {
+                folderSelect.innerHTML = '<option value="">اختر نوع المورد</option><option value="cours">📚 دروس</option><option value="devoirs">📝 فروض</option><option value="examens">📋 اختبارات</option><option value="videos">🎥 فيديوهات تعليمية</option>';
+            } else {
+                folderSelect.innerHTML = '<option value="">اختر نوع المورد</option>';
+            }
         }
         
         // رفع الملف إلى localStorage
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const level = document.getElementById('uploadLevel').value;
-            const grade = document.getElementById('uploadGrade').value;
             const subject = document.getElementById('uploadSubject').options[document.getElementById('uploadSubject').selectedIndex]?.textContent;
             const subjectValue = document.getElementById('uploadSubject').value;
             const folder = document.getElementById('uploadFolder').value;
@@ -514,7 +529,7 @@
             let fileName = document.getElementById('fileNameCustom').value || file.name;
             const messageDiv = document.getElementById('uploadMessage');
             
-            if (!file || !level || !grade || !subject || !folder) {
+            if (!file || !level || !subject || !folder) {
                 messageDiv.innerHTML = '<div style="color:red">⚠️ الرجاء تعبئة جميع الحقول</div>';
                 return;
             }
@@ -531,8 +546,6 @@
                     originalName: file.name,
                     teacherName: teacherName,
                     level: level,
-                    grade: grade,
-                    gradeFolder: gradeFolders[level][grade],
                     subject: subject,
                     subjectValue: subjectValue,
                     folder: folder,
@@ -559,7 +572,7 @@
                 item.innerHTML = `
                     <div class="pending-info">
                         <p><strong>📄 ${file.fileName}</strong></p>
-                        <p>📁 ${file.level} / ${file.grade} / ${file.subject} / ${file.folderName}</p>
+                        <p>📁 ${file.level} / ${file.subject} / ${file.folderName}</p>
                         <p>👤 ${file.teacherName}</p>
                         <p>📅 ${new Date(file.date).toLocaleString('ar-TN')}</p>
                     </div>
@@ -586,7 +599,6 @@
             
             if (!file) return;
             
-            // التحقق من وجود التوكن
             let githubToken = localStorage.getItem('github_token');
             if (!githubToken) {
                 githubToken = prompt('🔐 لإضافة الملف إلى GitHub، الرجاء إدخال GitHub Token الخاص بك:\n(يمكنك إنشاؤه من Settings → Developer settings → Personal access tokens)');
@@ -604,13 +616,11 @@
             messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف إلى GitHub...</div>';
             
             try {
-                // استخراج البيانات من Base64
                 const base64Data = file.fileData.split(',')[1];
                 
-                // تحديد المسار النهائي
-                const finalPath = `fichiers/${file.level}/${file.gradeFolder}/${file.subjectValue}/${file.folder}/${file.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}.pdf`;
+                // المسار القديم البسيط: fichiers/[level]/[subject]/[folder]/
+                const finalPath = `fichiers/${file.level}/${file.subjectValue}/${file.folder}/${file.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}.pdf`;
                 
-                // رفع الملف إلى GitHub
                 const uploadResponse = await fetch(`https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${finalPath}`, {
                     method: 'PUT',
                     headers: {
@@ -629,21 +639,14 @@
                     throw new Error(error.message || 'فشل رفع الملف');
                 }
                 
-                // حذف الملف من قائمة الانتظار
                 const newPending = pendingFiles.filter(f => f.id != id);
                 localStorage.setItem('pendingFiles', JSON.stringify(newPending));
                 
                 messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تمت الموافقة على الملف ورفعه إلى GitHub بنجاح!<br>📄 ${file.fileName}<br>📁 ${finalPath}</div>`;
                 loadPendingFiles();
                 
-                // تحديث قائمة الملفات إذا كانت مفتوحة
-                if (document.getElementById('filesSection').classList.contains('active')) {
-                    showFiles(document.getElementById('filesSection').getAttribute('data-folder'));
-                }
-                
             } catch (error) {
                 messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}<br>يرجى التأكد من صحة التوكن والمجلدات.</div>`;
-                // إذا كان الخطأ بسبب التوكن، نزيله ليطلب مرة أخرى
                 if (error.message.includes('401') || error.message.includes('Bad credentials')) {
                     localStorage.removeItem('github_token');
                 }
@@ -681,9 +684,7 @@
             loadPendingFiles();
         }
         
-        document.getElementById('uploadLevel').addEventListener('change', function() { updateGrades(); });
-        document.getElementById('uploadGrade').addEventListener('change', function() { updateSubjectsUpload(); });
-        document.getElementById('uploadSubject').addEventListener('change', function() { updateFoldersUpload(); });
+        document.getElementById('uploadLevel').addEventListener('change', function() { updateSubjectsUpload(); updateFoldersUpload(); });
         document.getElementById('adminLink').addEventListener('click', function(e) { e.preventDefault(); showPending(); });
     </script>
 </body>
