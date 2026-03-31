@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.2/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     </script>
@@ -131,7 +129,7 @@
     <section class="hero">
         <h1>منصة تعليمية متكاملة</h1>
         <p>دروس، فروض، تمارين تفاعلية، وفيديوهات تعليمية لجميع المستويات</p>
-        <p style="font-size:14px; margin-top:10px;">📄 يدعم ملفات Word (يتم عرضها كـ PDF مع إمكانية تحميل الملف الأصلي)</p>
+        <p style="font-size:14px; margin-top:10px;">📄 يدعم: PDF (معاينة داخل المنصة) | Word (معاينة عبر Microsoft Office)</p>
     </section>
     
     <!-- مستويات التعليم الرئيسية -->
@@ -175,7 +173,7 @@
             <h2 class="level-title">📤 رفع ملف تعليمي جديد</h2>
             <div class="upload-form">
                 <div class="conversion-message">
-                    <i class="fas fa-magic"></i> ملفات Word تُعرض كـ PDF وتُحمل كـ Word أصلي
+                    <i class="fas fa-magic"></i> يدعم: PDF (معاينة داخل المنصة) | Word (معاينة عبر Microsoft Office)
                 </div>
                 <form id="uploadForm">
                     <div class="form-group">
@@ -212,8 +210,8 @@
                     
                     <div class="form-group">
                         <label>📎 الملف *</label>
-                        <input type="file" id="uploadFile" accept=".pdf,.doc,.docx" required>
-                        <small>يدعم: PDF و Word (يتم عرض Word كـ PDF، مع تحميل الملف الأصلي)</small>
+                        <input type="file" id="uploadFile" accept=".pdf,.docx" required>
+                        <small>يدعم: PDF و Word (.docx)</small>
                     </div>
                     
                     <div class="form-group">
@@ -318,49 +316,6 @@
         const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
         const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
         
-        // ==================== تحويل Word إلى PDF للعرض فقط ====================
-        async function convertWordToPDF(wordBlob, fileName) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        const arrayBuffer = e.target.result;
-                        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
-                        const html = result.value;
-                        
-                        const element = document.createElement('div');
-                        element.innerHTML = html;
-                        element.style.padding = '30px';
-                        element.style.fontFamily = 'Tajawal, Arial, sans-serif';
-                        element.style.direction = 'rtl';
-                        element.style.backgroundColor = 'white';
-                        element.style.maxWidth = '800px';
-                        element.style.margin = 'auto';
-                        
-                        document.body.appendChild(element);
-                        
-                        const opt = {
-                            margin: [0.5, 0.5, 0.5, 0.5],
-                            filename: fileName.replace(/\.docx?$/i, '.pdf'),
-                            image: { type: 'jpeg', quality: 0.98 },
-                            html2canvas: { scale: 2, useCORS: true },
-                            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-                        };
-                        
-                        html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
-                            const output = pdf.output('datauristring');
-                            document.body.removeChild(element);
-                            resolve(output);
-                        }).catch(reject);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                reader.onerror = reject;
-                reader.readAsArrayBuffer(wordBlob);
-            });
-        }
-        
         // ==================== دوال العرض ====================
         function showHome() {
             document.getElementById('levelsSection').style.display = 'block';
@@ -456,7 +411,7 @@
                 const data = await response.json();
                 
                 if (response.ok && Array.isArray(data)) {
-                    const files = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx'));
+                    const files = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.docx'));
                     if (files.length === 0) {
                         filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
                         return;
@@ -469,40 +424,27 @@
                         const rawUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${encodeURIComponent(file.name)}`;
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
-                        const isWord = fileName.endsWith('.doc') || fileName.endsWith('.docx');
+                        const isDocx = fileName.endsWith('.docx');
                         
-                        if (isWord) {
-                            // عرض ملف Word مع أيقونة
+                        if (isDocx) {
+                            // ملف Word - معاينة عبر Microsoft Office Online
+                            const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(rawUrl)}`;
+                            
                             fileCard.innerHTML = `
                                 <div class="thumbnail-container" id="thumb-${i}">
                                     <div class="thumbnail-placeholder"><i class="fas fa-file-word" style="font-size:48px; color:#2b5797;"></i><br>Word</div>
                                 </div>
                                 <div class="file-info">
-                                    <span class="file-name">📄 ${fileName} (Word)</span>
+                                    <span class="file-name">📄 ${fileName}</span>
                                     <div class="file-actions">
-                                        <button class="view-btn" id="view-btn-${i}"><i class="fas fa-eye"></i> معاينة</button>
-                                        <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل (Word)</button>
+                                        <button class="view-btn" onclick="window.open('${officeViewerUrl}', '_blank')"><i class="fas fa-eye"></i> معاينة</button>
+                                        <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
                                     </div>
                                 </div>
                             `;
                             filesListDiv.appendChild(fileCard);
-                            
-                            // إضافة حدث معاينة لملف Word
-                            const viewBtn = document.getElementById(`view-btn-${i}`);
-                            viewBtn.onclick = async () => {
-                                try {
-                                    // تحميل ملف Word وتحويله إلى PDF
-                                    const response = await fetch(rawUrl);
-                                    const wordBlob = await response.blob();
-                                    const pdfDataUrl = await convertWordToPDF(wordBlob, fileName);
-                                    await viewFile(pdfDataUrl, fileName);
-                                } catch (error) {
-                                    alert('حدث خطأ في تحويل الملف: ' + error.message);
-                                }
-                            };
-                            
                         } else {
-                            // ملف PDF مباشرة
+                            // ملف PDF - معاينة داخل المنصة (الطريقة القديمة)
                             fileCard.innerHTML = `
                                 <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${rawUrl}', '${fileName}')">
                                     <div class="thumbnail-placeholder"><i class="fas fa-file-pdf"></i><br>جاري تحميل المعاينة...</div>
@@ -544,14 +486,14 @@
             } catch (error) { console.error('Thumbnail error:', error); }
         }
         
-        async function viewFile(pdfDataUrl, fileName) {
+        async function viewFile(pdfUrl, fileName) {
             const viewer = document.getElementById('pdfViewer');
             const container = document.getElementById('pagesContainer');
             document.getElementById('viewerTitle').innerHTML = `📄 ${fileName}`;
             container.innerHTML = '<div class="page-loading">⏳ جاري تحميل الملف...</div>';
             viewer.style.display = 'flex';
             try {
-                const loadingTask = pdfjsLib.getDocument(pdfDataUrl);
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
                 const pdf = await loadingTask.promise;
                 const numPages = pdf.numPages;
                 container.innerHTML = '';
@@ -663,7 +605,7 @@
                         folder: folder,
                         folderName: folderName,
                         date: new Date().toISOString(),
-                        isWord: file.name.endsWith('.doc') || file.name.endsWith('.docx')
+                        isDocx: file.name.endsWith('.docx')
                     });
                     localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
                     messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
@@ -686,7 +628,7 @@
             pendingFiles.forEach(file => {
                 const item = document.createElement('div');
                 item.className = 'pending-item';
-                const fileIcon = file.isWord ? '📝 Word' : '📄 PDF';
+                const fileIcon = file.isDocx ? '📝 Word' : '📄 PDF';
                 item.innerHTML = `
                     <div class="pending-info">
                         <p><strong>${fileIcon} ${file.fileName}</strong></p>
@@ -709,14 +651,13 @@
             const file = pendingFiles.find(f => f.id == id);
             if (!file) return;
             
-            if (file.isWord) {
-                try {
-                    const blob = await fetch(file.fileData).then(r => r.blob());
-                    const pdfDataUrl = await convertWordToPDF(blob, file.fileName);
-                    await viewFile(pdfDataUrl, file.fileName);
-                } catch (error) {
-                    alert('حدث خطأ في تحويل الملف: ' + error.message);
-                }
+            if (file.isDocx) {
+                // لملفات Word في لوحة المراجعة، نفتحها في نافذة جديدة عبر Office Viewer
+                const blob = await fetch(file.fileData).then(r => r.blob());
+                const url = URL.createObjectURL(blob);
+                const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`;
+                window.open(officeViewerUrl, '_blank');
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
             } else {
                 viewFile(file.fileData, file.fileName);
             }
