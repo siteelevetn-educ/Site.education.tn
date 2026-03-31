@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.2/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     </script>
@@ -98,6 +100,17 @@
         .approve-btn { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
         .reject-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
         .preview-btn { background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+        
+        .conversion-message {
+            background: #f0f8ff;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            color: #667eea;
+            font-size: 14px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -118,6 +131,7 @@
     <section class="hero">
         <h1>منصة تعليمية متكاملة</h1>
         <p>دروس، فروض، تمارين تفاعلية، وفيديوهات تعليمية لجميع المستويات</p>
+        <p style="font-size:14px; margin-top:10px;">📄 يدعم ملفات Word (يتم عرضها كـ PDF مع إمكانية تحميل الملف الأصلي)</p>
     </section>
     
     <!-- مستويات التعليم الرئيسية -->
@@ -160,6 +174,9 @@
         <div class="level-card">
             <h2 class="level-title">📤 رفع ملف تعليمي جديد</h2>
             <div class="upload-form">
+                <div class="conversion-message">
+                    <i class="fas fa-magic"></i> ملفات Word تُعرض كـ PDF وتُحمل كـ Word أصلي
+                </div>
                 <form id="uploadForm">
                     <div class="form-group">
                         <label>📁 المستوى التعليمي *</label>
@@ -194,8 +211,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>📎 الملف (PDF فقط) *</label>
-                        <input type="file" id="uploadFile" accept=".pdf" required>
+                        <label>📎 الملف *</label>
+                        <input type="file" id="uploadFile" accept=".pdf,.doc,.docx" required>
+                        <small>يدعم: PDF و Word (يتم عرض Word كـ PDF، مع تحميل الملف الأصلي)</small>
                     </div>
                     
                     <div class="form-group">
@@ -246,7 +264,6 @@
         let currentLevel = '', currentGrade = '', currentGradeName = '', currentGradeFolder = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
         
-        // قائمة السنوات (لنموذج الرفع)
         const gradeOptions = {
             primaire: [
                 { name: 'السنة الأولى ابتدائي', folder: 'annee1' },
@@ -300,6 +317,49 @@
         
         const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
         const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
+        
+        // ==================== تحويل Word إلى PDF للعرض فقط ====================
+        async function convertWordToPDF(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const arrayBuffer = e.target.result;
+                        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                        const html = result.value;
+                        
+                        const element = document.createElement('div');
+                        element.innerHTML = html;
+                        element.style.padding = '30px';
+                        element.style.fontFamily = 'Tajawal, Arial, sans-serif';
+                        element.style.direction = 'rtl';
+                        element.style.backgroundColor = 'white';
+                        element.style.maxWidth = '800px';
+                        element.style.margin = 'auto';
+                        
+                        document.body.appendChild(element);
+                        
+                        const opt = {
+                            margin: [0.5, 0.5, 0.5, 0.5],
+                            filename: file.name.replace(/\.docx?$/i, '.pdf'),
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2, useCORS: true },
+                            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                        };
+                        
+                        html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
+                            const output = pdf.output('datauristring');
+                            document.body.removeChild(element);
+                            resolve({ pdfDataUrl: output, pdfFileName: file.name.replace(/\.docx?$/i, '.pdf') });
+                        }).catch(reject);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
         
         // ==================== دوال العرض ====================
         function showHome() {
@@ -388,7 +448,6 @@
             document.getElementById('foldersSection').classList.remove('active');
             document.getElementById('filesSection').classList.add('active');
             
-            // المسار الجديد مع السنة: fichiers/[level]/[gradeFolder]/[subject]/[folder]/
             const folderPath = `fichiers/${currentLevel}/${currentGradeFolder}/${currentSubjectFolder}/${folderType}/`;
             const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
             
@@ -397,38 +456,85 @@
                 const data = await response.json();
                 
                 if (response.ok && Array.isArray(data)) {
-                    const pdfFiles = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.PDF'));
-                    if (pdfFiles.length === 0) {
+                    const files = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx'));
+                    if (files.length === 0) {
                         filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
                         return;
                     }
                     filesListDiv.innerHTML = '';
-                    for (let i = 0; i < pdfFiles.length; i++) {
-                        const file = pdfFiles[i];
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
                         const fileCard = document.createElement('div');
                         fileCard.className = 'file-card';
                         const rawUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${encodeURIComponent(file.name)}`;
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
-                        fileCard.innerHTML = `
-                            <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${rawUrl}', '${fileName}')">
-                                <div class="thumbnail-placeholder"><i class="fas fa-file-pdf"></i><br>جاري تحميل المعاينة...</div>
-                            </div>
-                            <div class="file-info">
-                                <span class="file-name">📄 ${fileName}</span>
-                                <div class="file-actions">
-                                    <button class="view-btn" onclick="viewFile('${rawUrl}', '${fileName}')"><i class="fas fa-eye"></i> معاينة</button>
-                                    <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
+                        const isWord = fileName.endsWith('.doc') || fileName.endsWith('.docx');
+                        const fileType = isWord ? 'Word' : 'PDF';
+                        
+                        // إذا كان ملف Word، نحتاج إلى تحويله إلى PDF للعرض
+                        if (isWord) {
+                            // تحميل الملف وتحويله إلى PDF
+                            const wordResponse = await fetch(rawUrl);
+                            const wordBlob = await wordResponse.blob();
+                            const wordFile = new File([wordBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                            
+                            try {
+                                const conversionResult = await convertWordToPDF(wordFile);
+                                const pdfDataUrl = conversionResult.pdfDataUrl;
+                                
+                                fileCard.innerHTML = `
+                                    <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${pdfDataUrl}', '${fileName}')">
+                                        <div class="thumbnail-placeholder"><i class="fas fa-file-word"></i><br>Word - جاري التحويل...</div>
+                                    </div>
+                                    <div class="file-info">
+                                        <span class="file-name">📄 ${fileName} (Word)</span>
+                                        <div class="file-actions">
+                                            <button class="view-btn" onclick="viewFile('${pdfDataUrl}', '${fileName}')"><i class="fas fa-eye"></i> معاينة</button>
+                                            <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل (Word)</button>
+                                        </div>
+                                    </div>
+                                `;
+                                filesListDiv.appendChild(fileCard);
+                                generateThumbnail(pdfDataUrl, `thumb-${i}`);
+                            } catch (error) {
+                                fileCard.innerHTML = `
+                                    <div class="thumbnail-container" id="thumb-${i}">
+                                        <div class="thumbnail-placeholder"><i class="fas fa-file-word"></i><br>Word</div>
+                                    </div>
+                                    <div class="file-info">
+                                        <span class="file-name">📄 ${fileName} (Word)</span>
+                                        <div class="file-actions">
+                                            <button class="view-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-eye"></i> معاينة</button>
+                                            <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
+                                        </div>
+                                    </div>
+                                `;
+                                filesListDiv.appendChild(fileCard);
+                            }
+                        } else {
+                            // ملف PDF مباشرة
+                            fileCard.innerHTML = `
+                                <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${rawUrl}', '${fileName}')">
+                                    <div class="thumbnail-placeholder"><i class="fas fa-file-pdf"></i><br>جاري تحميل المعاينة...</div>
                                 </div>
-                            </div>
-                        `;
-                        filesListDiv.appendChild(fileCard);
-                        generateThumbnail(rawUrl, `thumb-${i}`);
+                                <div class="file-info">
+                                    <span class="file-name">📄 ${fileName}</span>
+                                    <div class="file-actions">
+                                        <button class="view-btn" onclick="viewFile('${rawUrl}', '${fileName}')"><i class="fas fa-eye"></i> معاينة</button>
+                                        <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
+                                    </div>
+                                </div>
+                            `;
+                            filesListDiv.appendChild(fileCard);
+                            generateThumbnail(rawUrl, `thumb-${i}`);
+                        }
                     }
                 } else {
                     filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
                 }
             } catch (error) {
+                console.error('Error:', error);
                 filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>';
             }
         }
@@ -546,32 +652,44 @@
                 return;
             }
             
-            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف...</div>';
+            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري معالجة الملف...</div>';
             
-            const reader = new FileReader();
-            reader.onload = function() {
-                const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
-                pendingFiles.push({
-                    id: Date.now(),
-                    fileData: reader.result,
-                    fileName: fileName,
-                    originalName: file.name,
-                    teacherName: teacherName,
-                    level: level,
-                    gradeFolder: gradeFolder,
-                    gradeName: gradeName,
-                    subject: subject,
-                    subjectValue: subjectValue,
-                    folder: folder,
-                    folderName: folderName,
-                    date: new Date().toISOString()
-                });
-                localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
-                messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
-                document.getElementById('uploadForm').reset();
-                if (isAdmin && document.getElementById('pendingSection').classList.contains('active')) loadPendingFiles();
-            };
-            reader.readAsDataURL(file);
+            try {
+                // قراءة الملف
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = e.target.result;
+                    const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
+                    
+                    // تخزين الملف الأصلي (Word أو PDF)
+                    pendingFiles.push({
+                        id: Date.now(),
+                        fileData: fileData,
+                        fileName: fileName,
+                        originalName: file.name,
+                        fileType: file.type,
+                        teacherName: teacherName,
+                        level: level,
+                        gradeFolder: gradeFolder,
+                        gradeName: gradeName,
+                        subject: subject,
+                        subjectValue: subjectValue,
+                        folder: folder,
+                        folderName: folderName,
+                        date: new Date().toISOString(),
+                        isWord: file.name.endsWith('.doc') || file.name.endsWith('.docx')
+                    });
+                    localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
+                    messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
+                    document.getElementById('uploadForm').reset();
+                    if (isAdmin && document.getElementById('pendingSection').classList.contains('active')) loadPendingFiles();
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ في معالجة الملف. يرجى إعادة المحاولة.</div>`;
+            }
         });
         
         function loadPendingFiles() {
@@ -582,9 +700,10 @@
             pendingFiles.forEach(file => {
                 const item = document.createElement('div');
                 item.className = 'pending-item';
+                const fileIcon = file.isWord ? '📝 Word' : '📄 PDF';
                 item.innerHTML = `
                     <div class="pending-info">
-                        <p><strong>📄 ${file.fileName}</strong></p>
+                        <p><strong>${fileIcon} ${file.fileName}</strong></p>
                         <p>📁 ${file.level} / ${file.gradeName} / ${file.subject} / ${file.folderName}</p>
                         <p>👤 ${file.teacherName}</p>
                         <p>📅 ${new Date(file.date).toLocaleString('ar-TN')}</p>
@@ -599,10 +718,20 @@
             });
         }
         
-        function previewPendingFile(id) {
+        async function previewPendingFile(id) {
             const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
             const file = pendingFiles.find(f => f.id == id);
-            if (file && file.fileData) viewFile(file.fileData, file.fileName);
+            if (!file) return;
+            
+            if (file.isWord) {
+                // تحويل Word إلى PDF للعرض
+                const blob = await fetch(file.fileData).then(r => r.blob());
+                const wordFile = new File([blob], file.fileName, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                const conversionResult = await convertWordToPDF(wordFile);
+                viewFile(conversionResult.pdfDataUrl, file.fileName);
+            } else {
+                viewFile(file.fileData, file.fileName);
+            }
         }
         
         async function approveFile(id) {
@@ -628,8 +757,7 @@
             
             try {
                 const base64Data = file.fileData.split(',')[1];
-                // المسار الجديد مع السنة
-                const finalPath = `fichiers/${file.level}/${file.gradeFolder}/${file.subjectValue}/${file.folder}/${file.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}.pdf`;
+                const finalPath = `fichiers/${file.level}/${file.gradeFolder}/${file.subjectValue}/${file.folder}/${file.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}`;
                 
                 const uploadResponse = await fetch(`https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${finalPath}`, {
                     method: 'PUT',
@@ -637,7 +765,10 @@
                     body: JSON.stringify({ message: `إضافة ملف: ${file.fileName}`, content: base64Data, branch: 'main' })
                 });
                 
-                if (!uploadResponse.ok) throw new Error('فشل رفع الملف');
+                if (!uploadResponse.ok) {
+                    const error = await uploadResponse.json();
+                    throw new Error(error.message || 'فشل رفع الملف');
+                }
                 
                 const newPending = pendingFiles.filter(f => f.id != id);
                 localStorage.setItem('pendingFiles', JSON.stringify(newPending));
@@ -646,8 +777,10 @@
                 loadPendingFiles();
                 
             } catch (error) {
-                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}</div>`;
-                if (error.message.includes('401')) localStorage.removeItem('github_token');
+                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}<br>يرجى التأكد من صحة التوكن وأن المجلدات موجودة.</div>`;
+                if (error.message.includes('401') || error.message.includes('Bad credentials')) {
+                    localStorage.removeItem('github_token');
+                }
             }
         }
         
