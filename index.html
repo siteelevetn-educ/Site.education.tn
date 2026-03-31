@@ -319,7 +319,7 @@
         const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
         
         // ==================== تحويل Word إلى PDF للعرض فقط ====================
-        async function convertWordToPDF(file) {
+        async function convertWordToPDF(wordBlob, fileName) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = async (e) => {
@@ -341,7 +341,7 @@
                         
                         const opt = {
                             margin: [0.5, 0.5, 0.5, 0.5],
-                            filename: file.name.replace(/\.docx?$/i, '.pdf'),
+                            filename: fileName.replace(/\.docx?$/i, '.pdf'),
                             image: { type: 'jpeg', quality: 0.98 },
                             html2canvas: { scale: 2, useCORS: true },
                             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -350,14 +350,14 @@
                         html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
                             const output = pdf.output('datauristring');
                             document.body.removeChild(element);
-                            resolve({ pdfDataUrl: output, pdfFileName: file.name.replace(/\.docx?$/i, '.pdf') });
+                            resolve(output);
                         }).catch(reject);
                     } catch (error) {
                         reject(error);
                     }
                 };
                 reader.onerror = reject;
-                reader.readAsArrayBuffer(file);
+                reader.readAsArrayBuffer(wordBlob);
             });
         }
         
@@ -470,48 +470,37 @@
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
                         const isWord = fileName.endsWith('.doc') || fileName.endsWith('.docx');
-                        const fileType = isWord ? 'Word' : 'PDF';
                         
-                        // إذا كان ملف Word، نحتاج إلى تحويله إلى PDF للعرض
                         if (isWord) {
-                            // تحميل الملف وتحويله إلى PDF
-                            const wordResponse = await fetch(rawUrl);
-                            const wordBlob = await wordResponse.blob();
-                            const wordFile = new File([wordBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                            // عرض ملف Word مع أيقونة
+                            fileCard.innerHTML = `
+                                <div class="thumbnail-container" id="thumb-${i}">
+                                    <div class="thumbnail-placeholder"><i class="fas fa-file-word" style="font-size:48px; color:#2b5797;"></i><br>Word</div>
+                                </div>
+                                <div class="file-info">
+                                    <span class="file-name">📄 ${fileName} (Word)</span>
+                                    <div class="file-actions">
+                                        <button class="view-btn" id="view-btn-${i}"><i class="fas fa-eye"></i> معاينة</button>
+                                        <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل (Word)</button>
+                                    </div>
+                                </div>
+                            `;
+                            filesListDiv.appendChild(fileCard);
                             
-                            try {
-                                const conversionResult = await convertWordToPDF(wordFile);
-                                const pdfDataUrl = conversionResult.pdfDataUrl;
-                                
-                                fileCard.innerHTML = `
-                                    <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${pdfDataUrl}', '${fileName}')">
-                                        <div class="thumbnail-placeholder"><i class="fas fa-file-word"></i><br>Word - جاري التحويل...</div>
-                                    </div>
-                                    <div class="file-info">
-                                        <span class="file-name">📄 ${fileName} (Word)</span>
-                                        <div class="file-actions">
-                                            <button class="view-btn" onclick="viewFile('${pdfDataUrl}', '${fileName}')"><i class="fas fa-eye"></i> معاينة</button>
-                                            <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل (Word)</button>
-                                        </div>
-                                    </div>
-                                `;
-                                filesListDiv.appendChild(fileCard);
-                                generateThumbnail(pdfDataUrl, `thumb-${i}`);
-                            } catch (error) {
-                                fileCard.innerHTML = `
-                                    <div class="thumbnail-container" id="thumb-${i}">
-                                        <div class="thumbnail-placeholder"><i class="fas fa-file-word"></i><br>Word</div>
-                                    </div>
-                                    <div class="file-info">
-                                        <span class="file-name">📄 ${fileName} (Word)</span>
-                                        <div class="file-actions">
-                                            <button class="view-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-eye"></i> معاينة</button>
-                                            <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
-                                        </div>
-                                    </div>
-                                `;
-                                filesListDiv.appendChild(fileCard);
-                            }
+                            // إضافة حدث معاينة لملف Word
+                            const viewBtn = document.getElementById(`view-btn-${i}`);
+                            viewBtn.onclick = async () => {
+                                try {
+                                    // تحميل ملف Word وتحويله إلى PDF
+                                    const response = await fetch(rawUrl);
+                                    const wordBlob = await response.blob();
+                                    const pdfDataUrl = await convertWordToPDF(wordBlob, fileName);
+                                    await viewFile(pdfDataUrl, fileName);
+                                } catch (error) {
+                                    alert('حدث خطأ في تحويل الملف: ' + error.message);
+                                }
+                            };
+                            
                         } else {
                             // ملف PDF مباشرة
                             fileCard.innerHTML = `
@@ -555,14 +544,14 @@
             } catch (error) { console.error('Thumbnail error:', error); }
         }
         
-        async function viewFile(pdfUrl, fileName) {
+        async function viewFile(pdfDataUrl, fileName) {
             const viewer = document.getElementById('pdfViewer');
             const container = document.getElementById('pagesContainer');
             document.getElementById('viewerTitle').innerHTML = `📄 ${fileName}`;
             container.innerHTML = '<div class="page-loading">⏳ جاري تحميل الملف...</div>';
             viewer.style.display = 'flex';
             try {
-                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const loadingTask = pdfjsLib.getDocument(pdfDataUrl);
                 const pdf = await loadingTask.promise;
                 const numPages = pdf.numPages;
                 container.innerHTML = '';
@@ -655,13 +644,10 @@
             messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري معالجة الملف...</div>';
             
             try {
-                // قراءة الملف
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const fileData = e.target.result;
                     const pendingFiles = JSON.parse(localStorage.getItem('pendingFiles') || '[]');
-                    
-                    // تخزين الملف الأصلي (Word أو PDF)
                     pendingFiles.push({
                         id: Date.now(),
                         fileData: fileData,
@@ -724,11 +710,13 @@
             if (!file) return;
             
             if (file.isWord) {
-                // تحويل Word إلى PDF للعرض
-                const blob = await fetch(file.fileData).then(r => r.blob());
-                const wordFile = new File([blob], file.fileName, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                const conversionResult = await convertWordToPDF(wordFile);
-                viewFile(conversionResult.pdfDataUrl, file.fileName);
+                try {
+                    const blob = await fetch(file.fileData).then(r => r.blob());
+                    const pdfDataUrl = await convertWordToPDF(blob, file.fileName);
+                    await viewFile(pdfDataUrl, file.fileName);
+                } catch (error) {
+                    alert('حدث خطأ في تحويل الملف: ' + error.message);
+                }
             } else {
                 viewFile(file.fileData, file.fileName);
             }
