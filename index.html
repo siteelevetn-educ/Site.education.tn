@@ -129,7 +129,7 @@
     <section class="hero">
         <h1>منصة تعليمية متكاملة</h1>
         <p>دروس، فروض، تمارين تفاعلية، وفيديوهات تعليمية لجميع المستويات</p>
-        <p style="font-size:14px; margin-top:10px;">📄 يدعم: PDF (معاينة داخل المنصة) | Word (معاينة عبر Microsoft Office)</p>
+        <p style="font-size:14px; margin-top:10px;">📄 يدعم: PDF (معاينة داخل المنصة) | Word (معاينة عبر Google Docs)</p>
     </section>
     
     <!-- مستويات التعليم الرئيسية -->
@@ -173,7 +173,7 @@
             <h2 class="level-title">📤 رفع ملف تعليمي جديد</h2>
             <div class="upload-form">
                 <div class="conversion-message">
-                    <i class="fas fa-magic"></i> يدعم: PDF (معاينة داخل المنصة) | Word (معاينة عبر Microsoft Office)
+                    <i class="fas fa-magic"></i> يدعم: PDF (معاينة داخل المنصة) | Word (معاينة عبر Google Docs)
                 </div>
                 <form id="uploadForm">
                     <div class="form-group">
@@ -427,8 +427,8 @@
                         const isDocx = fileName.endsWith('.docx');
                         
                         if (isDocx) {
-                            // ملف Word - معاينة عبر Microsoft Office Online
-                            const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(rawUrl)}`;
+                            // ملف Word - معاينة عبر Google Docs Viewer (يعمل بشكل أفضل على الهاتف)
+                            const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(rawUrl)}&embedded=true`;
                             
                             fileCard.innerHTML = `
                                 <div class="thumbnail-container" id="thumb-${i}">
@@ -437,14 +437,14 @@
                                 <div class="file-info">
                                     <span class="file-name">📄 ${fileName}</span>
                                     <div class="file-actions">
-                                        <button class="view-btn" onclick="window.open('${officeViewerUrl}', '_blank')"><i class="fas fa-eye"></i> معاينة</button>
+                                        <button class="view-btn" onclick="window.open('${viewerUrl}', '_blank')"><i class="fas fa-eye"></i> معاينة</button>
                                         <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
                                     </div>
                                 </div>
                             `;
                             filesListDiv.appendChild(fileCard);
                         } else {
-                            // ملف PDF - معاينة داخل المنصة (الطريقة القديمة)
+                            // ملف PDF - معاينة داخل المنصة
                             fileCard.innerHTML = `
                                 <div class="thumbnail-container" id="thumb-${i}" onclick="viewFile('${rawUrl}', '${fileName}')">
                                     <div class="thumbnail-placeholder"><i class="fas fa-file-pdf"></i><br>جاري تحميل المعاينة...</div>
@@ -652,11 +652,11 @@
             if (!file) return;
             
             if (file.isDocx) {
-                // لملفات Word في لوحة المراجعة، نفتحها في نافذة جديدة عبر Office Viewer
+                // لملفات Word في لوحة المراجعة، نفتحها في Google Docs Viewer
                 const blob = await fetch(file.fileData).then(r => r.blob());
                 const url = URL.createObjectURL(blob);
-                const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`;
-                window.open(officeViewerUrl, '_blank');
+                const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+                window.open(viewerUrl, '_blank');
                 setTimeout(() => URL.revokeObjectURL(url), 10000);
             } else {
                 viewFile(file.fileData, file.fileName);
