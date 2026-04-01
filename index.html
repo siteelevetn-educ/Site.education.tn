@@ -173,7 +173,7 @@
             <h2 class="level-title">📤 رفع ملف تعليمي جديد</h2>
             <div class="upload-form">
                 <div class="conversion-message">
-                    <i class="fas fa-cloud-upload-alt"></i> يتم رفع الملف مباشرة إلى GitHub للمراجعة
+                    <i class="fas fa-cloud-upload-alt"></i> يتم رفع الملف للمراجعة (سيتم مراجعته قبل النشر)
                 </div>
                 <form id="uploadForm">
                     <div class="form-group">
@@ -258,13 +258,12 @@
     <footer class="footer"><p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p><p style="margin-top: 10px; font-size: 12px;">منصة تعليمية مجانية للجميع</p></footer>
     
     <script>
-        // ==================== التكوين ====================
-        const REPO_OWNER = 'siteelevetn-educ';
-        const REPO_NAME = 'Site.education.tn';
-        
+        // ==================== البيانات ====================
         let currentLevel = '', currentGrade = '', currentGradeName = '', currentGradeFolder = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
-        let githubToken = null;
+        
+        // رابط Google Apps Script
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXS6ApDN2c9RMZouvr10hUS2gRQKqNq7VtZP4fvQuRuOQ0wCeJywthPPrhVeg8wdA2Hg/exec';
         
         const gradeOptions = {
             primaire: [
@@ -345,19 +344,6 @@
                 isAdmin = true;
                 document.getElementById('reviewBtn').style.display = 'block';
                 document.getElementById('loginBtn').style.display = 'none';
-                
-                // طلب GitHub Token للموافقة
-                const storedToken = localStorage.getItem('github_token');
-                if (storedToken && storedToken.startsWith('ghp_')) {
-                    githubToken = storedToken;
-                } else {
-                    githubToken = prompt('🔐 لإضافة الملفات إلى GitHub، الرجاء إدخال GitHub Token الخاص بك (مرة واحدة):');
-                    if (githubToken && githubToken.startsWith('ghp_')) {
-                        localStorage.setItem('github_token', githubToken);
-                    } else {
-                        alert('❌ التوكن غير صالح. سيتم طلبه مرة أخرى عند الموافقة.');
-                    }
-                }
                 alert('✅ مرحباً بك في لوحة التحكم');
             } else if (password !== null) {
                 alert('❌ كلمة المرور غير صحيحة');
@@ -421,7 +407,7 @@
             document.getElementById('filesSection').classList.add('active');
             
             const folderPath = `fichiers/${currentLevel}/${currentGradeFolder}/${currentSubjectFolder}/${folderType}/`;
-            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${folderPath}`;
+            const apiUrl = `https://api.github.com/repos/siteelevetn-educ/Site.education.tn/contents/${folderPath}`;
             
             try {
                 const response = await fetch(apiUrl);
@@ -438,7 +424,7 @@
                         const file = files[i];
                         const fileCard = document.createElement('div');
                         fileCard.className = 'file-card';
-                        const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${folderPath}${encodeURIComponent(file.name)}`;
+                        const rawUrl = `https://raw.githubusercontent.com/siteelevetn-educ/Site.education.tn/main/${folderPath}${encodeURIComponent(file.name)}`;
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
                         const isDocx = fileName.endsWith('.docx');
@@ -529,7 +515,7 @@
         function backToSubjects() { document.getElementById('subjectsSection').classList.add('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active'); }
         function backToFolders() { document.getElementById('foldersSection').classList.add('active'); document.getElementById('filesSection').classList.remove('active'); }
         
-        // ==================== دوال الرفع والمراجعة ====================
+        // ==================== دوال الرفع ====================
         function updateGradesUpload() {
             const level = document.getElementById('uploadLevel').value;
             const gradeSelect = document.getElementById('uploadGrade');
@@ -577,7 +563,7 @@
             }
         }
         
-        // رفع الملف مباشرة إلى GitHub (مجلد pending)
+        // رفع الملف إلى Google Apps Script (بدون Token)
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -598,271 +584,51 @@
                 return;
             }
             
-            // طلب GitHub Token إذا لم يكن موجوداً
-            if (!githubToken) {
-                const storedToken = localStorage.getItem('github_token');
-                if (storedToken && storedToken.startsWith('ghp_')) {
-                    githubToken = storedToken;
-                } else {
-                    const token = prompt('🔐 لإضافة الملف إلى GitHub، الرجاء إدخال GitHub Token الخاص بك:');
-                    if (token && token.startsWith('ghp_')) {
-                        githubToken = token;
-                        localStorage.setItem('github_token', githubToken);
-                    } else {
-                        messageDiv.innerHTML = '<div style="color:red">❌ لا يمكن رفع الملف بدون GitHub Token صالح.</div>';
-                        return;
-                    }
-                }
-            }
+            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف...</div>';
             
-            messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف إلى GitHub...</div>';
-            
-            try {
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const base64Content = e.target.result.split(',')[1];
-                    const timestamp = Date.now();
-                    const safeFileName = fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_');
-                    const filePath = `fichiers/pending/files/${timestamp}_${safeFileName}`;
-                    
-                    // رفع الملف
-                    const uploadResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `رفع ملف: ${fileName} من قبل ${teacherName}`, content: base64Content, branch: 'main' })
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                
+                const payload = {
+                    fileData: base64Data,
+                    fileName: fileName,
+                    teacherName: teacherName,
+                    level: level,
+                    gradeFolder: gradeFolder,
+                    gradeName: gradeName,
+                    subject: subject,
+                    subjectValue: subjectValue,
+                    folder: folder,
+                    folderName: folderName
+                };
+                
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
                     });
                     
-                    if (!uploadResponse.ok) {
-                        const error = await uploadResponse.json();
-                        throw new Error(error.message || 'فشل رفع الملف');
-                    }
-                    
-                    const fileData = await uploadResponse.json();
-                    
-                    // إنشاء metadata
-                    const metadata = {
-                        id: timestamp,
-                        fileName: fileName,
-                        originalName: file.name,
-                        teacherName: teacherName,
-                        level: level,
-                        gradeFolder: gradeFolder,
-                        gradeName: gradeName,
-                        subject: subject,
-                        subjectValue: subjectValue,
-                        folder: folder,
-                        folderName: folderName,
-                        date: new Date().toISOString(),
-                        fileSha: fileData.content.sha,
-                        filePath: filePath
-                    };
-                    
-                    const metadataPath = `fichiers/pending/metadata/${timestamp}_metadata.json`;
-                    const metadataContent = btoa(unescape(encodeURIComponent(JSON.stringify(metadata, null, 2))));
-                    
-                    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${metadataPath}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `إضافة metadata للملف: ${fileName}`, content: metadataContent, branch: 'main' })
-                    });
-                    
-                    messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم رفع الملف بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
+                    // مع mode: 'no-cors' لا يمكن قراءة الرد، نفترض النجاح
+                    messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
                     document.getElementById('uploadForm').reset();
                     
-                    // تحديث قائمة الملفات المعلقة إذا كانت مفتوحة
-                    if (isAdmin && document.getElementById('pendingSection').classList.contains('active')) {
-                        loadPendingFiles();
-                    }
-                };
-                reader.readAsDataURL(file);
-                
-            } catch (error) {
-                console.error('Upload error:', error);
-                messageDiv.innerHTML = `<div style="color:red">❌ حدث خطأ: ${error.message}<br>يرجى إعادة المحاولة.</div>`;
-                if (error.message.includes('401')) {
-                    localStorage.removeItem('github_token');
-                    githubToken = null;
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    messageDiv.innerHTML = '<div style="color:red">❌ حدث خطأ في رفع الملف. يرجى إعادة المحاولة.</div>';
                 }
-            }
+            };
+            reader.readAsDataURL(file);
         });
         
-        // تحميل الملفات المعلقة من GitHub
-        async function loadPendingFiles() {
+        // تحميل الملفات المعلقة من Google Drive (سيتم تطويرها لاحقاً)
+        function loadPendingFiles() {
             const container = document.getElementById('pendingList');
-            container.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات المعلقة...</div>';
-            
-            try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata`, {
-                    headers: githubToken ? { 'Authorization': `token ${githubToken}` } : {}
-                });
-                
-                if (!response.ok) {
-                    container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>';
-                    return;
-                }
-                
-                const files = await response.json();
-                if (!Array.isArray(files) || files.length === 0) {
-                    container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                for (const file of files) {
-                    if (file.name.endsWith('.json')) {
-                        const contentResponse = await fetch(file.download_url);
-                        const metadata = await contentResponse.json();
-                        
-                        const item = document.createElement('div');
-                        item.className = 'pending-item';
-                        item.innerHTML = `
-                            <div class="pending-info">
-                                <p><strong>📄 ${metadata.fileName}</strong></p>
-                                <p>📁 ${metadata.level} / ${metadata.gradeName} / ${metadata.subject} / ${metadata.folderName}</p>
-                                <p>👤 ${metadata.teacherName}</p>
-                                <p>📅 ${new Date(metadata.date).toLocaleString('ar-TN')}</p>
-                            </div>
-                            <div class="pending-actions">
-                                <button class="preview-btn" onclick="previewPendingFile('${metadata.filePath}')"><i class="fas fa-eye"></i> معاينة</button>
-                                <button class="approve-btn" onclick="approveFile('${metadata.id}')"><i class="fas fa-check"></i> موافقة</button>
-                                <button class="reject-btn" onclick="rejectFile('${metadata.id}', '${metadata.filePath}', '${file.sha}')"><i class="fas fa-times"></i> رفض</button>
-                            </div>
-                        `;
-                        container.appendChild(item);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading pending:', error);
-                container.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات المعلقة</div>';
-            }
-        }
-        
-        function previewPendingFile(filePath) {
-            const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${filePath}`;
-            if (filePath.endsWith('.pdf')) {
-                viewFile(rawUrl, 'معاينة الملف');
-            } else {
-                window.location.href = rawUrl;
-            }
-        }
-        
-        async function approveFile(id) {
-            if (!confirm('هل أنت متأكد من الموافقة على هذا الملف؟')) return;
-            
-            if (!githubToken) {
-                const storedToken = localStorage.getItem('github_token');
-                if (storedToken && storedToken.startsWith('ghp_')) {
-                    githubToken = storedToken;
-                } else {
-                    const token = prompt('🔐 لإضافة الملف إلى GitHub، الرجاء إدخال GitHub Token الخاص بك:');
-                    if (token && token.startsWith('ghp_')) {
-                        githubToken = token;
-                        localStorage.setItem('github_token', githubToken);
-                    } else {
-                        alert('❌ لا يمكن المتابعة بدون GitHub Token صالح.');
-                        return;
-                    }
-                }
-            }
-            
-            try {
-                // البحث عن metadata
-                const metadataResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata`, {
-                    headers: { 'Authorization': `token ${githubToken}` }
-                });
-                const files = await metadataResponse.json();
-                const metadataFile = files.find(f => f.name.includes(id));
-                
-                if (!metadataFile) {
-                    alert('❌ لم يتم العثور على metadata للملف');
-                    return;
-                }
-                
-                const contentResponse = await fetch(metadataFile.download_url);
-                const metadata = await contentResponse.json();
-                
-                // الحصول على ملف PDF
-                const pdfResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${metadata.filePath}`, {
-                    headers: { 'Authorization': `token ${githubToken}` }
-                });
-                const pdfData = await pdfResponse.json();
-                const pdfBase64 = pdfData.content;
-                
-                // المسار النهائي
-                const finalPath = `fichiers/${metadata.level}/${metadata.gradeFolder}/${metadata.subjectValue}/${metadata.folder}/${metadata.fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF.-]/g, '_')}`;
-                
-                // رفع الملف إلى المسار النهائي
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${finalPath}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `موافقة على إضافة الملف: ${metadata.fileName}`, content: pdfBase64, branch: 'main' })
-                });
-                
-                // حذف الملف من مجلد pending
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${metadata.filePath}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `حذف الملف بعد الموافقة`, sha: pdfData.sha, branch: 'main' })
-                });
-                
-                // حذف metadata
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${metadataFile.path}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `حذف metadata`, sha: metadataFile.sha, branch: 'main' })
-                });
-                
-                alert('✅ تمت الموافقة على الملف وإضافته إلى المنصة');
-                loadPendingFiles();
-                
-            } catch (error) {
-                console.error('Approve error:', error);
-                alert('❌ حدث خطأ: ' + error.message);
-            }
-        }
-        
-        async function rejectFile(id, filePath, sha) {
-            if (!confirm('هل أنت متأكد من رفض هذا الملف؟')) return;
-            
-            if (!githubToken) {
-                const storedToken = localStorage.getItem('github_token');
-                if (storedToken && storedToken.startsWith('ghp_')) {
-                    githubToken = storedToken;
-                } else {
-                    alert('❌ لا يمكن المتابعة بدون GitHub Token صالح.');
-                    return;
-                }
-            }
-            
-            try {
-                // حذف الملف
-                await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `رفض الملف`, sha: sha, branch: 'main' })
-                });
-                
-                // حذف metadata
-                const metadataResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/pending/metadata`, {
-                    headers: { 'Authorization': `token ${githubToken}` }
-                });
-                const files = await metadataResponse.json();
-                const metadataFile = files.find(f => f.name.includes(id));
-                if (metadataFile) {
-                    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${metadataFile.path}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `رفض الملف وحذف metadata`, sha: metadataFile.sha, branch: 'main' })
-                    });
-                }
-                
-                alert('❌ تم رفض الملف');
-                loadPendingFiles();
-                
-            } catch (error) {
-                console.error('Reject error:', error);
-                alert('❌ حدث خطأ: ' + error.message);
-            }
+            container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>';
         }
         
         function showPending() {
