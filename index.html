@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script async src="https://www.tiktok.com/embed.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     </script>
@@ -51,6 +52,16 @@
             margin: 0;
             font-size: 18px;
         }
+        /* إطار الصور التلقائي */
+        .image-box {
+            background: rgba(0,0,0,0.3);
+        }
+        .carousel-auto {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+        }
+        /* إطار الفيديوهات مع أزرار */
         .carousel {
             position: relative;
             height: 280px;
@@ -210,19 +221,16 @@
     
     <!-- إطارات الصور والفيديوهات -->
     <div class="media-container">
-        <!-- إطار الصور -->
-        <div class="media-box">
-            <h3>📸 صور تعليمية</h3>
-            <div class="carousel" id="imageCarousel">
+        <!-- إطار الصور (عرض تلقائي بدون أزرار) -->
+        <div class="media-box image-box">
+            <div class="carousel-auto" id="imageCarousel">
                 <div class="carousel-inner" id="imageCarouselInner">
                     <div class="loading" style="background:transparent; color:white;">⏳ جاري تحميل الصور...</div>
                 </div>
-                <button class="carousel-prev" onclick="prevImage()">❮</button>
-                <button class="carousel-next" onclick="nextImage()">❯</button>
             </div>
         </div>
         
-        <!-- إطار الفيديوهات -->
+        <!-- إطار الفيديوهات (مع أزرار) -->
         <div class="media-box">
             <h3>🎥 فيديوهات تعليمية</h3>
             <div class="carousel" id="videoCarousel">
@@ -243,7 +251,7 @@
         <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('national', 'مناظرات وطنية - كاباس', 'concours')">المناظرات الوطنية والكاباس</button></div></div>
     </section>
     
-    <!-- بقية الأقسام (المواد، المجلدات، الملفات، الرفع، المراجعة) -->
+    <!-- بقية الأقسام -->
     <section class="resources-section" id="subjectsSection">
         <div class="level-card">
             <h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2>
@@ -268,6 +276,7 @@
         </div>
     </section>
     
+    <!-- قسم رفع الملفات -->
     <section class="resources-section" id="uploadSection">
         <div class="level-card">
             <h2 class="level-title">📤 رفع ملف تعليمي جديد</h2>
@@ -309,9 +318,23 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>📎 الملف *</label>
-                        <input type="file" id="uploadFile" accept=".pdf,.docx,.mp4,.webm" required>
-                        <small>يدعم: PDF, Word, MP4, WebM</small>
+                        <label>📹 طريقة إضافة الفيديو *</label>
+                        <select id="uploadVideoMethod" required>
+                            <option value="file">رفع ملف فيديو (MP4/WebM)</option>
+                            <option value="link">إضافة رابط (YouTube/TikTok/Google Drive)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="videoFileGroup">
+                        <label>📎 ملف الفيديو *</label>
+                        <input type="file" id="uploadVideoFile" accept=".mp4,.webm">
+                        <small>للملفات الصغيرة (أقل من 50 ميجابايت)</small>
+                    </div>
+                    
+                    <div class="form-group" id="videoLinkGroup" style="display:none">
+                        <label>🔗 رابط الفيديو *</label>
+                        <input type="url" id="videoLink" placeholder="https://www.youtube.com/watch?v=... أو https://www.tiktok.com/@.../video/...">
+                        <small>YouTube, TikTok, Google Drive, Vimeo</small>
                     </div>
                     
                     <div class="form-group">
@@ -334,6 +357,7 @@
         </div>
     </section>
     
+    <!-- قسم الملفات المعلقة -->
     <section class="resources-section" id="pendingSection">
         <div class="level-card">
             <h2 class="level-title">📋 الملفات المرفوعة (قيد المراجعة)</h2>
@@ -360,7 +384,7 @@
         // ==================== التكوين ====================
         const REPO_OWNER = 'siteelevetn-educ';
         const REPO_NAME = 'Site.education.tn';
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXS6ApDN2c9RMZouvr10hUS2gRQKqNq7VtZP4fvQuRuOQ0wCeJywthPPrhVeg8wdA2Hg/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUa-ADOIjmyy9hLDhFwr3erMvYLF7la7ls5sTX7AniValkIEBBfhNBtrgiBYZy0QG2Fg/exec ';
         
         let currentLevel = '', currentGrade = '', currentGradeName = '', currentGradeFolder = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
@@ -426,6 +450,61 @@
         const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'videos': '🎥 فيديوهات تعليمية', 'qcm': '❓ اختبارات متعددة الإحتمالات (Qcm)' };
         const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'videos': 'fa-video', 'qcm': 'fa-question-circle' };
         
+        // ==================== دوال عرض الفيديو مع دعم الروابط ====================
+        function embedVideo(videoUrl, title) {
+            const viewer = document.getElementById('pdfViewer');
+            const container = document.getElementById('pagesContainer');
+            document.getElementById('viewerTitle').innerHTML = `🎬 ${title}`;
+            
+            let embedHtml = '';
+            
+            // YouTube
+            if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                let videoId = '';
+                if (videoUrl.includes('youtu.be')) {
+                    videoId = videoUrl.split('/').pop().split('?')[0];
+                } else {
+                    const urlParams = new URLSearchParams(new URL(videoUrl).search);
+                    videoId = urlParams.get('v');
+                }
+                embedHtml = `<iframe width="100%" height="500" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+            }
+            // TikTok
+            else if (videoUrl.includes('tiktok.com')) {
+                embedHtml = `
+                    <blockquote class="tiktok-embed" cite="${videoUrl}" data-video-id="${videoUrl.split('/').pop().split('?')[0]}" style="max-width:100%; min-width:300px;">
+                        <section></section>
+                    </blockquote>
+                    <script async src="https://www.tiktok.com/embed.js"></script>
+                `;
+            }
+            // Google Drive
+            else if (videoUrl.includes('drive.google.com')) {
+                const fileId = videoUrl.match(/[-\w]{25,}/);
+                if (fileId) {
+                    embedHtml = `<iframe src="https://drive.google.com/file/d/${fileId[0]}/preview" width="100%" height="500" allow="autoplay"></iframe>`;
+                } else {
+                    embedHtml = `<a href="${videoUrl}" target="_blank">فتح الرابط في نافذة جديدة</a>`;
+                }
+            }
+            // Vimeo
+            else if (videoUrl.includes('vimeo.com')) {
+                const videoId = videoUrl.split('/').pop().split('?')[0];
+                embedHtml = `<iframe src="https://player.vimeo.com/video/${videoId}" width="100%" height="500" frameborder="0" allowfullscreen></iframe>`;
+            }
+            // رابط مباشر لملف فيديو
+            else if (videoUrl.match(/\.(mp4|webm|ogg)$/i)) {
+                embedHtml = `<video controls style="width:100%; max-height:80vh;"><source src="${videoUrl}" type="video/mp4">متصفحك لا يدعم تشغيل الفيديو</video>`;
+            }
+            // رابط عادي
+            else {
+                embedHtml = `<a href="${videoUrl}" target="_blank">فتح الرابط في نافذة جديدة</a>`;
+            }
+            
+            container.innerHTML = embedHtml;
+            viewer.style.display = 'flex';
+        }
+        
         // ==================== تحميل الصور والفيديوهات ====================
         async function loadImages() {
             try {
@@ -442,7 +521,6 @@
         
         async function loadVideos() {
             try {
-                // البحث عن جميع مجلدات videos في كل المستويات
                 const levels = ['primaire', 'college', 'lycee', 'national'];
                 const allVideos = [];
                 
@@ -460,15 +538,28 @@
                                 const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${videoPath}`);
                                 if (response.ok) {
                                     const data = await response.json();
-                                    const videos = data.filter(file => file.name.match(/\.(mp4|webm|ogg)$/i));
-                                    for (const video of videos) {
-                                        allVideos.push({
-                                            url: `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${videoPath}${encodeURIComponent(video.name)}`,
-                                            name: video.name,
-                                            level: level,
-                                            grade: grade.name,
-                                            subject: subject
-                                        });
+                                    for (const file of data) {
+                                        if (file.name.match(/\.(mp4|webm|ogg)$/i)) {
+                                            allVideos.push({
+                                                url: `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${videoPath}${encodeURIComponent(file.name)}`,
+                                                name: file.name,
+                                                level: level,
+                                                grade: grade.name,
+                                                subject: subject,
+                                                isLink: false
+                                            });
+                                        } else if (file.name.endsWith('.link')) {
+                                            const linkResponse = await fetch(file.download_url);
+                                            const linkUrl = await linkResponse.text();
+                                            allVideos.push({
+                                                url: linkUrl.trim(),
+                                                name: file.name.replace('.link', ''),
+                                                level: level,
+                                                grade: grade.name,
+                                                subject: subject,
+                                                isLink: true
+                                            });
+                                        }
                                     }
                                 }
                             } catch (e) {}
@@ -514,12 +605,24 @@
                 const item = document.createElement('div');
                 item.className = 'carousel-item';
                 if (index === 0) item.classList.add('active');
-                item.innerHTML = `
-                    <video controls style="width:100%; height:100%; object-fit:cover;">
-                        <source src="${video.url}" type="video/mp4">
-                        متصفحك لا يدعم تشغيل الفيديو
-                    </video>
-                `;
+                
+                if (video.isLink || video.url.includes('youtube') || video.url.includes('tiktok') || video.url.includes('drive.google.com')) {
+                    // روابط خارجية
+                    item.innerHTML = `
+                        <div style="width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="embedVideo('${video.url}', '${video.name}')">
+                            <i class="fas fa-play-circle" style="font-size:48px; color:white;"></i>
+                            <span style="margin-right:10px; color:white;">${video.name}</span>
+                        </div>
+                    `;
+                } else {
+                    // ملفات فيديو مباشرة
+                    item.innerHTML = `
+                        <video controls style="width:100%; height:100%; object-fit:cover;">
+                            <source src="${video.url}" type="video/mp4">
+                            متصفحك لا يدعم تشغيل الفيديو
+                        </video>
+                    `;
+                }
                 container.appendChild(item);
             });
         }
@@ -528,25 +631,13 @@
             if (imageInterval) clearInterval(imageInterval);
             if (imagesList.length > 1) {
                 imageInterval = setInterval(() => {
-                    nextImage();
+                    const items = document.querySelectorAll('#imageCarouselInner .carousel-item');
+                    if (items.length === 0) return;
+                    items[currentImageIndex].classList.remove('active');
+                    currentImageIndex = (currentImageIndex + 1) % items.length;
+                    items[currentImageIndex].classList.add('active');
                 }, 5000);
             }
-        }
-        
-        function nextImage() {
-            if (imagesList.length === 0) return;
-            const items = document.querySelectorAll('#imageCarouselInner .carousel-item');
-            items[currentImageIndex].classList.remove('active');
-            currentImageIndex = (currentImageIndex + 1) % items.length;
-            items[currentImageIndex].classList.add('active');
-        }
-        
-        function prevImage() {
-            if (imagesList.length === 0) return;
-            const items = document.querySelectorAll('#imageCarouselInner .carousel-item');
-            items[currentImageIndex].classList.remove('active');
-            currentImageIndex = (currentImageIndex - 1 + items.length) % items.length;
-            items[currentImageIndex].classList.add('active');
         }
         
         function nextVideo() {
@@ -662,7 +753,7 @@
                 const data = await response.json();
                 
                 if (response.ok && Array.isArray(data)) {
-                    const files = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.docx') || file.name.match(/\.(mp4|webm|ogg)$/i));
+                    const files = data.filter(file => file.name.endsWith('.pdf') || file.name.endsWith('.docx') || file.name.match(/\.(mp4|webm|ogg)$/i) || file.name.endsWith('.link'));
                     if (files.length === 0) {
                         filesListDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات حالياً. سيتم إضافتها قريباً.</div>';
                         return;
@@ -676,18 +767,35 @@
                         const downloadUrl = file.download_url;
                         const fileName = file.name;
                         const isVideo = fileName.match(/\.(mp4|webm|ogg)$/i);
+                        const isLink = fileName.endsWith('.link');
                         const isDocx = fileName.endsWith('.docx');
                         
                         if (isVideo) {
                             fileCard.innerHTML = `
-                                <div class="thumbnail-container" onclick="playVideo('${rawUrl}', '${fileName}')">
+                                <div class="thumbnail-container" onclick="embedVideo('${rawUrl}', '${fileName}')">
                                     <div class="thumbnail-placeholder"><i class="fas fa-video" style="font-size:48px; color:#e74c3c;"></i><br>فيديو</div>
                                 </div>
                                 <div class="file-info">
                                     <span class="file-name">📹 ${fileName}</span>
                                     <div class="file-actions">
-                                        <button class="view-btn" onclick="playVideo('${rawUrl}', '${fileName}')"><i class="fas fa-play"></i> تشغيل</button>
+                                        <button class="view-btn" onclick="embedVideo('${rawUrl}', '${fileName}')"><i class="fas fa-play"></i> تشغيل</button>
                                         <button class="download-btn" onclick="downloadFile('${downloadUrl}', '${fileName}')"><i class="fas fa-download"></i> تحميل</button>
+                                    </div>
+                                </div>
+                            `;
+                            filesListDiv.appendChild(fileCard);
+                        } else if (isLink) {
+                            const linkResponse = await fetch(rawUrl);
+                            const linkUrl = await linkResponse.text();
+                            fileCard.innerHTML = `
+                                <div class="thumbnail-container" onclick="embedVideo('${linkUrl}', '${fileName.replace('.link', '')}')">
+                                    <div class="thumbnail-placeholder"><i class="fas fa-link" style="font-size:48px; color:#3498db;"></i><br>رابط فيديو</div>
+                                </div>
+                                <div class="file-info">
+                                    <span class="file-name">🔗 ${fileName.replace('.link', '')}</span>
+                                    <div class="file-actions">
+                                        <button class="view-btn" onclick="embedVideo('${linkUrl}', '${fileName.replace('.link', '')}')"><i class="fas fa-play"></i> تشغيل</button>
+                                        <button class="download-btn" onclick="window.open('${linkUrl}', '_blank')"><i class="fas fa-external-link-alt"></i> فتح الرابط</button>
                                     </div>
                                 </div>
                             `;
@@ -730,19 +838,6 @@
                 console.error('Error:', error);
                 filesListDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات.</div>';
             }
-        }
-        
-        function playVideo(videoUrl, title) {
-            const viewer = document.getElementById('pdfViewer');
-            const container = document.getElementById('pagesContainer');
-            document.getElementById('viewerTitle').innerHTML = `🎬 ${title}`;
-            container.innerHTML = `
-                <video controls style="max-width:100%; max-height:80vh;">
-                    <source src="${videoUrl}" type="video/mp4">
-                    متصفحك لا يدعم تشغيل الفيديو
-                </video>
-            `;
-            viewer.style.display = 'flex';
         }
         
         async function generateThumbnail(pdfUrl, containerId) {
@@ -839,6 +934,23 @@
             }
         }
         
+        // التبديل بين رفع ملف أو رابط
+        document.getElementById('uploadVideoMethod').addEventListener('change', function() {
+            const method = this.value;
+            if (method === 'file') {
+                document.getElementById('videoFileGroup').style.display = 'block';
+                document.getElementById('videoLinkGroup').style.display = 'none';
+                document.getElementById('uploadVideoFile').required = true;
+                document.getElementById('videoLink').required = false;
+            } else {
+                document.getElementById('videoFileGroup').style.display = 'none';
+                document.getElementById('videoLinkGroup').style.display = 'block';
+                document.getElementById('uploadVideoFile').required = false;
+                document.getElementById('videoLink').required = true;
+            }
+        });
+        
+        // رفع الملف
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -849,24 +961,78 @@
             const subjectValue = document.getElementById('uploadSubject').value;
             const folder = document.getElementById('uploadFolder').value;
             const folderName = document.getElementById('uploadFolder').options[document.getElementById('uploadFolder').selectedIndex]?.textContent;
-            const file = document.getElementById('uploadFile').files[0];
             const teacherName = document.getElementById('teacherName').value;
-            let fileName = document.getElementById('fileNameCustom').value || file.name;
+            let fileName = document.getElementById('fileNameCustom').value;
             const messageDiv = document.getElementById('uploadMessage');
             
-            if (!file || !level || !gradeFolder || !subject || !folder) {
+            const videoMethod = document.getElementById('uploadVideoMethod').value;
+            let file = null;
+            let videoLink = null;
+            
+            if (videoMethod === 'file') {
+                file = document.getElementById('uploadVideoFile').files[0];
+                if (!file) {
+                    messageDiv.innerHTML = '<div style="color:red">⚠️ الرجاء اختيار ملف فيديو</div>';
+                    return;
+                }
+                if (!fileName) fileName = file.name;
+            } else {
+                videoLink = document.getElementById('videoLink').value;
+                if (!videoLink) {
+                    messageDiv.innerHTML = '<div style="color:red">⚠️ الرجاء إدخال رابط الفيديو</div>';
+                    return;
+                }
+                if (!fileName) fileName = 'فيديو تعليمي';
+            }
+            
+            if (!level || !gradeFolder || !subject || !folder) {
                 messageDiv.innerHTML = '<div style="color:red">⚠️ الرجاء تعبئة جميع الحقول</div>';
                 return;
             }
             
             messageDiv.innerHTML = '<div style="color:#667eea">⏳ جاري رفع الملف...</div>';
             
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const base64Data = e.target.result.split(',')[1];
-                
+            if (videoMethod === 'file') {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64Data = e.target.result.split(',')[1];
+                    const payload = {
+                        fileData: base64Data,
+                        fileName: fileName,
+                        fileType: file.type,
+                        teacherName: teacherName,
+                        level: level,
+                        gradeFolder: gradeFolder,
+                        gradeName: gradeName,
+                        subject: subject,
+                        subjectValue: subjectValue,
+                        folder: folder,
+                        folderName: folderName,
+                        isLink: false
+                    };
+                    
+                    try {
+                        await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📹 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الفيديو وإضافته بعد الموافقة.</div>`;
+                        document.getElementById('uploadForm').reset();
+                        document.getElementById('videoLinkGroup').style.display = 'none';
+                        document.getElementById('videoFileGroup').style.display = 'block';
+                        document.getElementById('uploadVideoMethod').value = 'file';
+                        
+                    } catch (error) {
+                        messageDiv.innerHTML = '<div style="color:red">❌ حدث خطأ في رفع الملف. يرجى إعادة المحاولة.</div>';
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
                 const payload = {
-                    fileData: base64Data,
+                    videoLink: videoLink,
                     fileName: fileName,
                     teacherName: teacherName,
                     level: level,
@@ -875,7 +1041,8 @@
                     subject: subject,
                     subjectValue: subjectValue,
                     folder: folder,
-                    folderName: folderName
+                    folderName: folderName,
+                    isLink: true
                 };
                 
                 try {
@@ -886,15 +1053,16 @@
                         body: JSON.stringify(payload)
                     });
                     
-                    messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
+                    messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>🔗 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الرابط وإضافته بعد الموافقة.</div>`;
                     document.getElementById('uploadForm').reset();
+                    document.getElementById('videoLinkGroup').style.display = 'none';
+                    document.getElementById('videoFileGroup').style.display = 'block';
+                    document.getElementById('uploadVideoMethod').value = 'file';
                     
                 } catch (error) {
-                    console.error('Upload error:', error);
-                    messageDiv.innerHTML = '<div style="color:red">❌ حدث خطأ في رفع الملف. يرجى إعادة المحاولة.</div>';
+                    messageDiv.innerHTML = '<div style="color:red">❌ حدث خطأ في إضافة الرابط. يرجى إعادة المحاولة.</div>';
                 }
-            };
-            reader.readAsDataURL(file);
+            }
         });
         
         async function loadPendingFiles() {
@@ -943,7 +1111,7 @@
                 if (result.status === 'success') {
                     alert('✅ تمت الموافقة على الملف ونقله إلى GitHub');
                     loadPendingFiles();
-                    loadVideos(); // تحديث قائمة الفيديوهات
+                    loadVideos();
                 } else {
                     alert('❌ حدث خطأ: ' + result.message);
                 }
