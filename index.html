@@ -258,12 +258,11 @@
     <footer class="footer"><p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p><p style="margin-top: 10px; font-size: 12px;">منصة تعليمية مجانية للجميع</p></footer>
     
     <script>
-        // ==================== البيانات ====================
+        // ==================== التكوين ====================
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGs79XP0Ry5mqauX0MO9pCNqgg435FAQas1j0xwuJmWgUqkMs4m0MDwyrVg792NB41yw/exec';
+        
         let currentLevel = '', currentGrade = '', currentGradeName = '', currentGradeFolder = '', currentSubject = '', currentSubjectFolder = '', currentSubjects = [];
         let isAdmin = false;
-        
-        // رابط Google Apps Script
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXS6ApDN2c9RMZouvr10hUS2gRQKqNq7VtZP4fvQuRuOQ0wCeJywthPPrhVeg8wdA2Hg/exec';
         
         const gradeOptions = {
             primaire: [
@@ -563,7 +562,7 @@
             }
         }
         
-        // رفع الملف إلى Google Apps Script (بدون Token)
+        // رفع الملف إلى Google Apps Script
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -613,7 +612,6 @@
                         body: JSON.stringify(payload)
                     });
                     
-                    // مع mode: 'no-cors' لا يمكن قراءة الرد، نفترض النجاح
                     messageDiv.innerHTML = `<div style="color:green; background:#e8f5e9; padding:15px; border-radius:10px">✅ تم استلام طلبك بنجاح!<br>📄 ${fileName}<br>👤 ${teacherName}<br>⏱️ سيتم مراجعة الملف وإضافته بعد الموافقة.</div>`;
                     document.getElementById('uploadForm').reset();
                     
@@ -625,10 +623,83 @@
             reader.readAsDataURL(file);
         });
         
-        // تحميل الملفات المعلقة من Google Drive (سيتم تطويرها لاحقاً)
-        function loadPendingFiles() {
+        // ==================== دوال لوحة المراجعة ====================
+        async function loadPendingFiles() {
             const container = document.getElementById('pendingList');
-            container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>';
+            container.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات المعلقة...</div>';
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const files = await response.json();
+                
+                if (!Array.isArray(files) || files.length === 0) {
+                    container.innerHTML = '<div class="empty-message">📭 لا توجد ملفات في انتظار المراجعة</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                for (const file of files) {
+                    const item = document.createElement('div');
+                    item.className = 'pending-item';
+                    item.innerHTML = `
+                        <div class="pending-info">
+                            <p><strong>📄 ${file.fileName}</strong></p>
+                            <p>📁 ${file.level} / ${file.gradeName} / ${file.subject} / ${file.folderName}</p>
+                            <p>👤 ${file.teacherName}</p>
+                            <p>📅 ${new Date(file.date).toLocaleString('ar-TN')}</p>
+                        </div>
+                        <div class="pending-actions">
+                            <button class="preview-btn" onclick="previewFile('${file.fileUrl}')"><i class="fas fa-eye"></i> معاينة</button>
+                            <button class="approve-btn" onclick="approveFile('${file.id}')"><i class="fas fa-check"></i> موافقة</button>
+                            <button class="reject-btn" onclick="rejectFile('${file.id}')"><i class="fas fa-times"></i> رفض</button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                }
+            } catch (error) {
+                console.error('Error loading pending:', error);
+                container.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات المعلقة</div>';
+            }
+        }
+        
+        function previewFile(fileUrl) {
+            window.open(fileUrl, '_blank');
+        }
+        
+        async function approveFile(fileId) {
+            if (!confirm('هل أنت متأكد من الموافقة على هذا الملف؟')) return;
+            
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=approve&fileId=${fileId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert('✅ تمت الموافقة على الملف ونقله إلى GitHub');
+                    loadPendingFiles();
+                } else {
+                    alert('❌ حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ حدث خطأ في الاتصال بالخادم');
+            }
+        }
+        
+        async function rejectFile(fileId) {
+            if (!confirm('هل أنت متأكد من رفض هذا الملف؟')) return;
+            
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=reject&fileId=${fileId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert('❌ تم رفض الملف');
+                    loadPendingFiles();
+                } else {
+                    alert('❌ حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ حدث خطأ في الاتصال بالخادم');
+            }
         }
         
         function showPending() {
