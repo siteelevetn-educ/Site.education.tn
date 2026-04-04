@@ -1,5 +1,40 @@
 {
   "images": [],
-  "videos": {},
-  "files": {}
+  "videos": {
+    "primaire/annee1/arabe/videos": [
+      "1739100593048.mp4"
+    ]
+  },
+  "files": {
+    "college/annee7/technologie/devoirs": [
+      "فرض مراقبة 2.7.2026.pdf"
+    ],
+    "college/annee9/technologie/devoirs": [
+      "فرض تأليفي عدد 2.9.2026.pdf",
+      "فرض مراقبة عدد 2 .9.2026 (1).pdf",
+      "فرض مراقبة عدد 2 .9.2026.pdf"
+    ],
+    "national/concours/francais/qcm": [
+      "QCM 1.pdf",
+      "QCM 7-correction .pdf",
+      "QCM-Français-CAPES2008_CAPESTUNISIE.COM.pdf",
+      "QCM-Français-CAPES2014_capestunisie.com.pdf",
+      "QCM10-correction .pdf",
+      "QCM2 + correction.pdf",
+      "QCM5-correction .pdf",
+      "QCM6-correction .pdf",
+      "QCM8-correction .pdf",
+      "QCM9-correction .pdf",
+      "Qcm chapitre 1 français.pdf",
+      "Qcm11-correction .pdf",
+      "Qcm12-correction .pdf",
+      "Qcm13-correction .pdf",
+      "capes-2022.pdf",
+      "capes-2023.pdf",
+      "capes-2024.pdf",
+      "capes-2025.pdf",
+      "capeslm-2004-2007.pdf",
+      "📝 CORRECTION QCM1.pdf"
+    ]
+  }
 }
