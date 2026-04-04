@@ -1,6 +1,11 @@
 name: mise à jour des données
 
 on:
+  push:
+    paths:
+      - 'fichiers/**'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
