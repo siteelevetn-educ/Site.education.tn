@@ -3,26 +3,33 @@ name: mise à jour des données
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create data.json
         run: |
           mkdir -p fichiers
-          echo '{
+          cat > fichiers/data.json << 'EOF'
+          {
             "images": [],
             "videos": {},
             "files": {}
-          }' > fichiers/data.json
+          }
+          EOF
           
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add fichiers/data.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update data.json"
+          git diff --staged --quiet || git commit -m "Update data.json"
           git push
