@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة تعليمية - تونس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; direction: rtl; }
+        .navbar { background: rgba(255,255,255,0.95); box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .logo { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; flex-wrap: wrap; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 500; transition: 0.3s; cursor: pointer; }
+        .nav-links a:hover { color: #667eea; }
+        .login-btn { background: #667eea; color: white !important; padding: 8px 16px; border-radius: 8px; }
+        .review-btn { background: #27ae60; color: white !important; padding: 8px 16px; border-radius: 8px; }
+        .hero { padding: 100px 20px 30px; text-align: center; color: white; }
+        .hero h1 { font-size: 40px; }
+        
+        .media-container { max-width: 1400px; margin: 0 auto 40px; padding: 0 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+        .media-box { flex: 1; min-width: 300px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; }
+        .media-box h3 { background: rgba(0,0,0,0.5); color: white; padding: 12px; text-align: center; }
+        .image-box { background: rgba(0,0,0,0.3); }
+        .carousel-auto { position: relative; height: 280px; overflow: hidden; }
+        .carousel { position: relative; height: 280px; overflow: hidden; }
+        .carousel-inner { position: relative; height: 100%; }
+        .carousel-item { position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0; transition: opacity 0.5s; display: flex; align-items: center; justify-content: center; }
+        .carousel-item.active { opacity: 1; z-index: 1; }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-prev, .carousel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 50%; }
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+        
+        .levels-section { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .level-card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .level-card:hover { transform: translateY(-5px); }
+        .level-title { font-size: 28px; font-weight: 800; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
+        .grades-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .grade-btn { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; color: #2c3e50; cursor: pointer; transition: all 0.3s; text-align: center; }
+        .grade-btn:hover { background: linear-gradient(135deg, #667eea, #764ba2); color: white; transform: translateY(-2px); }
+        
+        .resources-section { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: none; }
+        .resources-section.active { display: block; }
+        .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
+        .resource-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; }
+        .resource-card:hover { transform: translateY(-5px); }
+        .resource-icon { background: linear-gradient(135deg, #667eea, #764ba2); padding: 25px; text-align: center; color: white; }
+        .resource-icon i { font-size: 40px; }
+        .resource-content { padding: 20px; text-align: center; }
+        .resource-title { font-size: 18px; font-weight: 700; color: #2c3e50; }
+        .file-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .file-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .file-card:hover { transform: translateY(-5px); }
+        .thumbnail-container { background: #f5f5f5; height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+        .thumbnail-placeholder { text-align: center; color: #7f8c8d; }
+        .thumbnail-placeholder i { font-size: 48px; color: #e74c3c; margin-bottom: 10px; }
+        .file-info { padding: 12px; text-align: center; border-top: 1px solid #eee; }
+        .file-name { font-size: 12px; color: #2c3e50; word-break: break-all; margin-bottom: 10px; }
+        .file-actions { display: flex; gap: 10px; justify-content: center; }
+        .view-btn, .download-btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Tajawal', sans-serif; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+        .view-btn { background: #3498db; color: white; }
+        .download-btn { background: #27ae60; color: white; }
+        .back-btn { text-align: center; margin-top: 25px; }
+        .back-btn button { background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .footer { background: #1a2632; color: white; text-align: center; padding: 30px; margin-top: 60px; }
+        
+        .upload-form, .pending-list { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
+        .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 16px; }
+        .pending-item { border: 1px solid #eee; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .pending-info { flex: 2; }
+        .pending-actions { display: flex; gap: 10px; }
+        .approve-btn { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+        .reject-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+        .preview-btn { background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+        .conversion-message { background: #f0f8ff; border: 1px solid #667eea; border-radius: 8px; padding: 10px; margin: 10px 0; text-align: center; }
+        .loading { text-align: center; padding: 40px; color: #667eea; background: white; border-radius: 12px; }
+        .empty-message { text-align: center; padding: 40px; color: #7f8c8d; background: white; border-radius: 12px; }
+        
+        .pdf-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #525659; z-index: 2000; display: none; flex-direction: column; }
+        .pdf-toolbar { background: #2c3e50; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .close-viewer { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .pages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .page-image { max-width: 100%; width: auto; height: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3); background: white; border-radius: 4px; }
+        
+        @media (max-width: 768px) { .hero h1 { font-size: 32px; } .level-title { font-size: 22px; } .grades-grid { grid-template-columns: repeat(2, 1fr); } .media-container { flex-direction: column; } .nav-links { gap: 10px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" onclick="showHome()">📚 منصة تعليمية - تونس</div>
+            <ul class="nav-links">
+                <li><a onclick="showHome()">الرئيسية</a></li>
+                <li><a onclick="showHome()">الموارد</a></li>
+                <li><a onclick="showUpload()">📤 رفع ملف</a></li>
+                <li><a id="loginBtn" class="login-btn" onclick="showLogin()">🔐 تسجيل دخول</a></li>
+                <li><a id="reviewBtn" style="display:none" class="review-btn" onclick="showPending()">📋 المراجعة</a></li>
+                <li><a href="#">تواصل معنا</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <h1>منصة تعليمية متكاملة</h1>
+    </section>
+    
+    <div class="media-container">
+        <div class="media-box image-box">
+            <div class="carousel-auto" id="imageCarousel">
+                <div class="carousel-inner" id="imageCarouselInner">
+                    <div class="loading" style="background:transparent; color:white;">⏳ جاري تحميل الصور...</div>
+                </div>
+            </div>
+        </div>
+        <div class="media-box">
+            <h3>🎥 فيديوهات تعليمية</h3>
+            <div class="carousel" id="videoCarousel">
+                <div class="carousel-inner" id="videoCarouselInner">
+                    <div class="loading" style="background:transparent; color:white;">⏳ جاري تحميل الفيديوهات...</div>
+                </div>
+                <button class="carousel-prev" onclick="prevVideo()">❮</button>
+                <button class="carousel-next" onclick="nextVideo()">❯</button>
+            </div>
+        </div>
+    </div>
+    
+    <section class="levels-section" id="levelsSection">
+        <div class="level-card"><h2 class="level-title">🏫 التعليم الابتدائي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('primaire', 'السنة الأولى ابتدائي', 'annee1')">السنة الأولى</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الثانية ابتدائي', 'annee2')">السنة الثانية</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الثالثة ابتدائي', 'annee3')">السنة الثالثة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الرابعة ابتدائي', 'annee4')">السنة الرابعة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة الخامسة ابتدائي', 'annee5')">السنة الخامسة</button><button class="grade-btn" onclick="showGrades('primaire', 'السنة السادسة ابتدائي', 'annee6')">السنة السادسة</button></div></div>
+        <div class="level-card"><h2 class="level-title">📖 التعليم الإعدادي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('college', 'السنة السابعة أساسي', 'annee7')">السنة السابعة أساسي</button><button class="grade-btn" onclick="showGrades('college', 'السنة الثامنة أساسي', 'annee8')">السنة الثامنة أساسي</button><button class="grade-btn" onclick="showGrades('college', 'السنة التاسعة أساسي', 'annee9')">السنة التاسعة أساسي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🎓 التعليم الثانوي</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('lycee', 'السنة الأولى ثانوي', 'annee10')">السنة الأولى ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الثانية ثانوي', 'annee11')">السنة الثانية ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الثالثة ثانوي', 'annee12')">السنة الثالثة ثانوي</button><button class="grade-btn" onclick="showGrades('lycee', 'السنة الرابعة ثانوي', 'annee13')">السنة الرابعة ثانوي</button></div></div>
+        <div class="level-card"><h2 class="level-title">🏆 مناظرات وطنية وكاباس</h2><div class="grades-grid"><button class="grade-btn" onclick="showGrades('national', 'مناظرات وطنية - كاباس', 'concours')">المناظرات الوطنية والكاباس</button></div></div>
+    </section>
+    
+    <section class="resources-section" id="subjectsSection">
+        <div class="level-card">
+            <h2 class="level-title" id="selectedLevelTitle">المواد التعليمية</h2>
+            <div class="grades-grid" id="subjectsGrid"></div>
+            <div class="back-btn"><button onclick="backToLevels()">← العودة إلى المستويات</button></div>
+        </div>
+    </section>
+
+    <section class="resources-section" id="foldersSection">
+        <div class="level-card">
+            <h2 class="level-title" id="selectedFolderTitle">نوع المورد</h2>
+            <div class="resources-grid" id="foldersGrid"></div>
+            <div class="back-btn"><button onclick="backToSubjects()">← العودة إلى المواد</button></div>
+        </div>
+    </section>
+
+    <section class="resources-section" id="filesSection">
+        <div class="level-card">
+            <h2 class="level-title" id="selectedFilesTitle">الملفات</h2>
+            <div id="filesList" class="file-list"></div>
+            <div class="back-btn"><button onclick="backToFolders()">← العودة إلى أنواع الموارد</button></div>
+        </div>
+    </section>
+    
+    <section class="resources-section" id="uploadSection">
+        <div class="level-card">
+            <h2 class="level-title">📤 رفع ملف تعليمي جديد</h2>
+            <div class="upload-form">
+                <form id="uploadForm">
+                    <div class="form-group"><label>المستوى التعليمي</label><select id="uploadLevel" required><option value="">اختر المستوى</option><option value="primaire">ابتدائي</option><option value="college">إعدادي</option><option value="lycee">ثانوي</option><option value="national">مناظرات</option></select></div>
+                    <div class="form-group"><label>السنة</label><select id="uploadGrade" required><option value="">اختر المستوى أولاً</option></select></div>
+                    <div class="form-group"><label>المادة</label><select id="uploadSubject" required><option value="">اختر السنة أولاً</option></select></div>
+                    <div class="form-group"><label>نوع المورد</label><select id="uploadFolder" required><option value="">اختر نوع المورد</option></select></div>
+                    <div class="form-group"><label>الملف</label><input type="file" id="uploadFile" accept=".pdf,.docx,.mp4,.webm" required></div>
+                    <div class="form-group"><label>اسم الأستاذ</label><input type="text" id="teacherName" required></div>
+                    <button type="submit" class="grade-btn" style="background:#27ae60; color:white; width:100%"><i class="fas fa-upload"></i> رفع الملف للمراجعة</button>
+                </form>
+                <div id="uploadMessage" style="margin-top:20px;"></div>
+            </div>
+            <div class="back-btn"><button onclick="showHome()">← العودة إلى الرئيسية</button></div>
+        </div>
+    </section>
+    
+    <section class="resources-section" id="pendingSection">
+        <div class="level-card">
+            <h2 class="level-title">📋 الملفات المرفوعة (قيد المراجعة)</h2>
+            <div id="pendingList" class="pending-list"><div class="loading">⏳ جاري تحميل الملفات...</div></div>
+            <div class="back-btn"><button onclick="showHome()">← العودة إلى الرئيسية</button></div>
+        </div>
+    </section>
+    
+    <div id="pdfViewer" class="pdf-viewer">
+        <div class="pdf-toolbar"><div class="file-title" id="viewerTitle">معاينة الملف</div><button class="close-viewer" onclick="closePDFViewer()">✖ إغلاق</button></div>
+        <div id="pagesContainer" class="pages-container"><div class="page-loading">⏳ جاري تحميل الملف...</div></div>
+    </div>
+    
+    <footer class="footer"><p>© 2026 منصة تعليمية - جميع الحقوق محفوظة</p></footer>
+    
+    <script>
+        // ==================== التكوين الأساسي ====================
+        const REPO_OWNER = 'siteelevetn-educ';
+        const REPO_NAME = 'Site.education.tn';
+        const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/`;
+        
+        let currentLevel = '', currentGrade = '', currentGradeName = '', currentGradeFolder = '', currentSubject = '', currentSubjectFolder = '';
+        let isAdmin = false;
+        
+        let imagesList = [];
+        let videosList = [];
+        let currentImageIndex = 0, currentVideoIndex = 0, imageInterval = null;
+        
+        // بيانات المستويات
+        const gradeOptions = {
+            primaire: [{ name: 'السنة الأولى ابتدائي', folder: 'annee1' }, { name: 'السنة الثانية ابتدائي', folder: 'annee2' }, { name: 'السنة الثالثة ابتدائي', folder: 'annee3' }, { name: 'السنة الرابعة ابتدائي', folder: 'annee4' }, { name: 'السنة الخامسة ابتدائي', folder: 'annee5' }, { name: 'السنة السادسة ابتدائي', folder: 'annee6' }],
+            college: [{ name: 'السنة السابعة أساسي', folder: 'annee7' }, { name: 'السنة الثامنة أساسي', folder: 'annee8' }, { name: 'السنة التاسعة أساسي', folder: 'annee9' }],
+            lycee: [{ name: 'السنة الأولى ثانوي', folder: 'annee10' }, { name: 'السنة الثانية ثانوي', folder: 'annee11' }, { name: 'السنة الثالثة ثانوي', folder: 'annee12' }, { name: 'السنة الرابعة ثانوي', folder: 'annee13' }],
+            national: [{ name: 'مناظرات وطنية - كاباس', folder: 'concours' }]
+        };
+        
+        const subjectsData = {
+            primaire: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'],
+            college: ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'],
+            national: ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique']
+        };
+        
+        const lyceeSubjects = {
+            'السنة الأولى ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'],
+            'السنة الثانية ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
+            'السنة الثالثة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'],
+            'السنة الرابعة ثانوي': ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف']
+        };
+        
+        const resourceFolders = {
+            primaire: ['cours', 'devoirs', 'examens', 'vidéos'],
+            college: ['cours', 'devoirs', 'examens', 'vidéos'],
+            lycee: ['cours', 'devoirs', 'examens', 'vidéos'],
+            national: ['examens', 'qcm']
+        };
+        
+        const folderNames = {
+            'اللغة العربية': 'arabe', 'الفرنسية': 'francais', 'الأنكليزية': 'anglais', 'الرياضيات': 'maths', 'إيقاظ علمي': 'eveil',
+            'الفيزياء': 'physique', 'العلوم الطبيعية': 'sciences', 'التكنولوجيا': 'technologie', 'français': 'francais', 'english': 'anglais',
+            'maths': 'maths', 'physique': 'physique', 'technique': 'technique', 'informatique': 'informatique', 'الإقتصاد والتصرف': 'economie'
+        };
+        
+        const folderNamesAr = { 'cours': '📚 دروس', 'devoirs': '📝 فروض', 'examens': '📋 إمتحانات', 'vidéos': '🎥 فيديوهات', 'qcm': '❓ Qcm' };
+        const folderIcons = { 'cours': 'fa-book', 'devoirs': 'fa-pencil-alt', 'examens': 'fa-file-alt', 'vidéos': 'fa-video', 'qcm': 'fa-question-circle' };
+        
+        // ==================== عرض الصور ====================
+        async function loadImages() {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/fichiers/images`);
+                if (response.ok) {
+                    const data = await response.json();
+                    imagesList = data.filter(f => f.name.match(/\.(jpg|jpeg|png|gif)$/i));
+                    displayImages();
+                }
+            } catch(e) { console.error(e); }
+        }
+        
+        function displayImages() {
+            const container = document.getElementById('imageCarouselInner');
+            if (!imagesList.length) { container.innerHTML = '<div class="empty-message" style="background:transparent; color:white;">📷 لا توجد صور</div>'; return; }
+            container.innerHTML = '';
+            imagesList.forEach((img, i) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item' + (i === 0 ? ' active' : '');
+                item.innerHTML = `<img src="${RAW_URL}fichiers/images/${encodeURIComponent(img.name)}" loading="lazy">`;
+                container.appendChild(item);
+            });
+            startSlideshow();
+        }
+        
+        function startSlideshow() {
+            if (imageInterval) clearInterval(imageInterval);
+            if (imagesList.length > 1) imageInterval = setInterval(() => {
+                const items = document.querySelectorAll('#imageCarouselInner .carousel-item');
+                if (!items.length) return;
+                items[currentImageIndex].classList.remove('active');
+                currentImageIndex = (currentImageIndex + 1) % items.length;
+                items[currentImageIndex].classList.add('active');
+            }, 5000);
+        }
+        
+        // ==================== عرض الفيديوهات ====================
+        async function loadVideos() {
+            try {
+                videosList = [];
+                for (const level of ['primaire', 'college', 'lycee', 'national']) {
+                    const grades = gradeOptions[level] || [];
+                    for (const grade of grades) {
+                        const subjects = level === 'lycee' ? lyceeSubjects[grade.name] || lyceeSubjects['السنة الأولى ثانوي'] : subjectsData[level];
+                        for (const subject of subjects) {
+                            const subjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
+                            const videoPath = `fichiers/${level}/${grade.folder}/${subjectFolder}/vidéos/`;
+                            try {
+                                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${videoPath}`);
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    for (const file of data) {
+                                        if (file.name.match(/\.(mp4|webm)$/i)) {
+                                            videosList.push({ url: RAW_URL + videoPath + encodeURIComponent(file.name), name: file.name });
+                                        }
+                                    }
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+                displayVideos();
+            } catch(e) { console.error(e); }
+        }
+        
+        function displayVideos() {
+            const container = document.getElementById('videoCarouselInner');
+            if (!videosList.length) { container.innerHTML = '<div class="empty-message" style="background:transparent; color:white;">🎬 لا توجد فيديوهات</div>'; return; }
+            container.innerHTML = '';
+            videosList.forEach((video, i) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item' + (i === 0 ? ' active' : '');
+                item.innerHTML = `<div style="width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="embedVideo('${video.url}', '${video.name}')"><i class="fas fa-play-circle" style="font-size:48px; color:white;"></i><span style="margin-right:10px; color:white;">${video.name}</span></div>`;
+                container.appendChild(item);
+            });
+        }
+        
+        function embedVideo(url, title) {
+            document.getElementById('pdfViewer').style.display = 'flex';
+            document.getElementById('viewerTitle').innerHTML = `🎬 ${title}`;
+            document.getElementById('pagesContainer').innerHTML = `<video controls style="width:100%; max-height:80vh;"><source src="${url}" type="video/mp4"></video>`;
+        }
+        
+        function nextVideo() {
+            const items = document.querySelectorAll('#videoCarouselInner .carousel-item');
+            if (!items.length) return;
+            items[currentVideoIndex].classList.remove('active');
+            currentVideoIndex = (currentVideoIndex + 1) % items.length;
+            items[currentVideoIndex].classList.add('active');
+        }
+        
+        function prevVideo() {
+            const items = document.querySelectorAll('#videoCarouselInner .carousel-item');
+            if (!items.length) return;
+            items[currentVideoIndex].classList.remove('active');
+            currentVideoIndex = (currentVideoIndex - 1 + items.length) % items.length;
+            items[currentVideoIndex].classList.add('active');
+        }
+        
+        // ==================== عرض الملفات في الأقسام ====================
+        function showHome() {
+            document.getElementById('levelsSection').style.display = 'block';
+            document.getElementById('subjectsSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
+            document.getElementById('uploadSection').classList.remove('active');
+            document.getElementById('pendingSection').classList.remove('active');
+        }
+        
+        function showUpload() {
+            document.getElementById('levelsSection').style.display = 'none';
+            document.getElementById('subjectsSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
+            document.getElementById('uploadSection').classList.add('active');
+            document.getElementById('pendingSection').classList.remove('active');
+        }
+        
+        function showLogin() {
+            if (prompt('كلمة المرور:') === 'admin123') {
+                isAdmin = true;
+                document.getElementById('reviewBtn').style.display = 'block';
+                document.getElementById('loginBtn').style.display = 'none';
+                alert('مرحباً بك في لوحة التحكم');
+            }
+        }
+        
+        function showGrades(level, gradeName, gradeFolder) {
+            currentLevel = level;
+            currentGradeName = gradeName;
+            currentGradeFolder = gradeFolder;
+            currentSubjects = level === 'lycee' ? lyceeSubjects[gradeName] || lyceeSubjects['السنة الأولى ثانوي'] : subjectsData[level];
+            document.getElementById('selectedLevelTitle').innerHTML = `📚 المواد التعليمية - ${gradeName}`;
+            const grid = document.getElementById('subjectsGrid');
+            grid.innerHTML = '';
+            currentSubjects.forEach(sub => {
+                const btn = document.createElement('div');
+                btn.className = 'grade-btn';
+                btn.textContent = sub;
+                btn.onclick = () => showFolders(sub);
+                grid.appendChild(btn);
+            });
+            document.getElementById('levelsSection').style.display = 'none';
+            document.getElementById('subjectsSection').classList.add('active');
+        }
+        
+        function showFolders(subject) {
+            currentSubject = subject;
+            currentSubjectFolder = folderNames[subject] || subject.replace(/ /g, '_').toLowerCase();
+            document.getElementById('selectedFolderTitle').innerHTML = `📁 ${subject} - ${currentGradeName}`;
+            const grid = document.getElementById('foldersGrid');
+            grid.innerHTML = '';
+            resourceFolders[currentLevel].forEach(folder => {
+                const card = document.createElement('div');
+                card.className = 'resource-card';
+                card.onclick = () => showFiles(folder);
+                card.innerHTML = `<div class="resource-icon"><i class="fas ${folderIcons[folder]}"></i></div><div class="resource-content"><div class="resource-title">${folderNamesAr[folder]}</div></div>`;
+                grid.appendChild(card);
+            });
+            document.getElementById('subjectsSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.add('active');
+        }
+        
+        async function showFiles(folderType) {
+            document.getElementById('selectedFilesTitle').innerHTML = `📄 ${folderNamesAr[folderType]} - ${currentSubject} (${currentGradeName})`;
+            const filesDiv = document.getElementById('filesList');
+            filesDiv.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات...</div>';
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.add('active');
+            
+            const folderPath = `fichiers/${currentLevel}/${currentGradeFolder}/${currentSubjectFolder}/${folderType}/`;
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${folderPath}`);
+                const data = await res.json();
+                if (!res.ok || !Array.isArray(data)) { filesDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات</div>'; return; }
+                
+                const files = data.filter(f => f.name.match(/\.(pdf|docx|mp4|webm)$/i));
+                if (!files.length) { filesDiv.innerHTML = '<div class="empty-message">📭 لا توجد ملفات</div>'; return; }
+                
+                filesDiv.innerHTML = '';
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const rawUrl = RAW_URL + folderPath + encodeURIComponent(file.name);
+                    const isVideo = file.name.match(/\.(mp4|webm)$/i);
+                    const isDocx = file.name.endsWith('.docx');
+                    
+                    const card = document.createElement('div');
+                    card.className = 'file-card';
+                    if (isVideo) {
+                        card.innerHTML = `
+                            <div class="thumbnail-container" onclick="embedVideo('${rawUrl}', '${file.name}')">
+                                <div class="thumbnail-placeholder"><i class="fas fa-video"></i><br>فيديو</div>
+                            </div>
+                            <div class="file-info">
+                                <span class="file-name">📹 ${file.name}</span>
+                                <div class="file-actions">
+                                    <button class="view-btn" onclick="embedVideo('${rawUrl}', '${file.name}')"><i class="fas fa-play"></i> تشغيل</button>
+                                    <button class="download-btn" onclick="downloadFile('${file.download_url}', '${file.name}')"><i class="fas fa-download"></i> تحميل</button>
+                                </div>
+                            </div>
+                        `;
+                    } else if (isDocx) {
+                        card.innerHTML = `
+                            <div class="thumbnail-container"><div class="thumbnail-placeholder"><i class="fas fa-file-word"></i><br>Word</div></div>
+                            <div class="file-info">
+                                <span class="file-name">📄 ${file.name}</span>
+                                <div class="file-actions">
+                                    <button class="view-btn" onclick="window.open('${rawUrl}', '_blank')"><i class="fas fa-eye"></i> معاينة</button>
+                                    <button class="download-btn" onclick="downloadFile('${file.download_url}', '${file.name}')"><i class="fas fa-download"></i> تحميل</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        card.innerHTML = `
+                            <div class="thumbnail-container" id="thumb-${i}" onclick="viewPdf('${rawUrl}', '${file.name}')">
+                                <div class="thumbnail-placeholder"><i class="fas fa-file-pdf"></i><br>PDF</div>
+                            </div>
+                            <div class="file-info">
+                                <span class="file-name">📄 ${file.name}</span>
+                                <div class="file-actions">
+                                    <button class="view-btn" onclick="viewPdf('${rawUrl}', '${file.name}')"><i class="fas fa-eye"></i> معاينة</button>
+                                    <button class="download-btn" onclick="downloadFile('${file.download_url}', '${file.name}')"><i class="fas fa-download"></i> تحميل</button>
+                                </div>
+                            </div>
+                        `;
+                        generatePdfThumbnail(rawUrl, `thumb-${i}`);
+                    }
+                    filesDiv.appendChild(card);
+                }
+            } catch(e) {
+                filesDiv.innerHTML = '<div class="empty-message">⚠️ حدث خطأ في تحميل الملفات</div>';
+            }
+        }
+        
+        async function generatePdfThumbnail(url, id) {
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 0.4 });
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                document.getElementById(id).innerHTML = '';
+                document.getElementById(id).appendChild(canvas);
+            } catch(e) {}
+        }
+        
+        function viewPdf(url, title) {
+            document.getElementById('pdfViewer').style.display = 'flex';
+            document.getElementById('viewerTitle').innerHTML = `📄 ${title}`;
+            const container = document.getElementById('pagesContainer');
+            container.innerHTML = '<div class="page-loading">⏳ جاري التحميل...</div>';
+            pdfjsLib.getDocument(url).promise.then(async pdf => {
+                container.innerHTML = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                    canvas.className = 'page-image';
+                    container.appendChild(canvas);
+                }
+            }).catch(() => container.innerHTML = '<div class="page-loading">❌ خطأ في التحميل</div>');
+        }
+        
+        function closePDFViewer() { document.getElementById('pdfViewer').style.display = 'none'; }
+        function downloadFile(url, name) { const a = document.createElement('a'); a.href = url; a.download = name; a.click(); }
+        function backToLevels() { document.getElementById('levelsSection').style.display = 'block'; document.getElementById('subjectsSection').classList.remove('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active'); }
+        function backToSubjects() { document.getElementById('subjectsSection').classList.add('active'); document.getElementById('foldersSection').classList.remove('active'); document.getElementById('filesSection').classList.remove('active'); }
+        function backToFolders() { document.getElementById('foldersSection').classList.add('active'); document.getElementById('filesSection').classList.remove('active'); }
+        
+        // ==================== الرفع والمراجعة ====================
+        function updateGradesUpload() {
+            const level = document.getElementById('uploadLevel').value;
+            const gradeSelect = document.getElementById('uploadGrade');
+            gradeSelect.innerHTML = '<option value="">اختر السنة</option>';
+            (gradeOptions[level] || []).forEach(g => { const opt = document.createElement('option'); opt.value = g.folder; opt.textContent = g.name; gradeSelect.appendChild(opt); });
+            document.getElementById('uploadSubject').innerHTML = '<option value="">اختر السنة أولاً</option>';
+            document.getElementById('uploadFolder').innerHTML = '<option value="">اختر نوع المورد</option>';
+        }
+        
+        function updateSubjectsUpload() {
+            const level = document.getElementById('uploadLevel').value;
+            const gradeName = document.getElementById('uploadGrade').options[document.getElementById('uploadGrade').selectedIndex]?.textContent;
+            const subjectSelect = document.getElementById('uploadSubject');
+            let subs = [];
+            if (level === 'lycee') subs = gradeName === 'السنة الأولى ثانوي' ? ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique'] : ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique', 'informatique', 'الإقتصاد والتصرف'];
+            else if (level === 'primaire') subs = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'إيقاظ علمي'];
+            else if (level === 'college') subs = ['اللغة العربية', 'الفرنسية', 'الأنكليزية', 'الرياضيات', 'الفيزياء', 'العلوم الطبيعية', 'التكنولوجيا'];
+            else if (level === 'national') subs = ['اللغة العربية', 'français', 'english', 'maths', 'physique', 'technique'];
+            subjectSelect.innerHTML = '<option value="">اختر المادة</option>';
+            subs.forEach(s => { const opt = document.createElement('option'); opt.value = folderNames[s] || s.replace(/ /g, '_').toLowerCase(); opt.textContent = s; subjectSelect.appendChild(opt); });
+        }
+        
+        function updateFoldersUpload() {
+            const level = document.getElementById('uploadLevel').value;
+            const folderSelect = document.getElementById('uploadFolder');
+            if (level === 'national') folderSelect.innerHTML = '<option value="">اختر النوع</option><option value="examens">📋 إمتحانات</option><option value="qcm">❓ Qcm</option>';
+            else if (level) folderSelect.innerHTML = '<option value="">اختر النوع</option><option value="cours">📚 دروس</option><option value="devoirs">📝 فروض</option><option value="examens">📋 اختبارات</option><option value="vidéos">🎥 فيديوهات</option>';
+        }
+        
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const level = document.getElementById('uploadLevel').value;
+            const gradeFolder = document.getElementById('uploadGrade').value;
+            const gradeName = document.getElementById('uploadGrade').options[document.getElementById('uploadGrade').selectedIndex]?.textContent;
+            const subject = document.getElementById('uploadSubject').options[document.getElementById('uploadSubject').selectedIndex]?.textContent;
+            const subjectValue = document.getElementById('uploadSubject').value;
+            const folder = document.getElementById('uploadFolder').value;
+            const file = document.getElementById('uploadFile').files[0];
+            const teacherName = document.getElementById('teacherName').value;
+            const fileName = document.getElementById('fileNameCustom')?.value || file.name;
+            const msgDiv = document.getElementById('uploadMessage');
+            if (!file || !level || !gradeFolder || !subject || !folder) { msgDiv.innerHTML = '<div style="color:red">⚠️ جميع الحقول مطلوبة</div>'; return; }
+            msgDiv.innerHTML = '<div style="color:#667eea">⏳ جاري الرفع...</div>';
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const payload = { fileData: e.target.result.split(',')[1], fileName, fileType: file.type, teacherName, level, gradeFolder, gradeName, subject, subjectValue, folder, isLink: false };
+                try {
+                    await fetch('https://script.google.com/macros/s/AKfycbzUa-ADOIjmyy9hLDhFwr3erMvYLF7la7ls5sTX7AniValkIEBBfhNBtrgiBYZy0QG2Fg/exec', { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    msgDiv.innerHTML = `<div style="color:green">✅ تم الرفع بنجاح! سيتم مراجعة الملف.</div>`;
+                    document.getElementById('uploadForm').reset();
+                } catch(err) { msgDiv.innerHTML = '<div style="color:red">❌ حدث خطأ</div>'; }
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        function showPending() {
+            if (!isAdmin) { alert('الرجاء تسجيل الدخول أولاً'); return; }
+            document.getElementById('levelsSection').style.display = 'none';
+            document.getElementById('subjectsSection').classList.remove('active');
+            document.getElementById('foldersSection').classList.remove('active');
+            document.getElementById('filesSection').classList.remove('active');
+            document.getElementById('uploadSection').classList.remove('active');
+            document.getElementById('pendingSection').classList.add('active');
+            document.getElementById('pendingList').innerHTML = '<div class="loading">⏳ جاري التحميل...</div>';
+            fetch('https://script.google.com/macros/s/AKfycbzUa-ADOIjmyy9hLDhFwr3erMvYLF7la7ls5sTX7AniValkIEBBfhNBtrgiBYZy0QG2Fg/exec')
+                .then(r => r.json()).then(files => {
+                    if (!files.length) { document.getElementById('pendingList').innerHTML = '<div class="empty-message">📭 لا توجد ملفات</div>'; return; }
+                    document.getElementById('pendingList').innerHTML = '';
+                    files.forEach(f => {
+                        const div = document.createElement('div'); div.className = 'pending-item';
+                        div.innerHTML = `<div class="pending-info"><p><strong>📄 ${f.fileName}</strong></p><p>${f.level} / ${f.gradeName} / ${f.subject} / ${f.folderName}</p><p>👤 ${f.teacherName}</p><p>📅 ${new Date(f.date).toLocaleString()}</p></div>
+                        <div class="pending-actions"><button class="preview-btn" onclick="window.open('${f.fileUrl}','_blank')">👁️ معاينة</button>
+                        <button class="approve-btn" onclick="alert('تمت الموافقة (سيتم التطوير لاحقاً)')">✅ موافقة</button>
+                        <button class="reject-btn" onclick="alert('تم الرفض')">❌ رفض</button></div>`;
+                        document.getElementById('pendingList').appendChild(div);
+                    });
+                }).catch(() => document.getElementById('pendingList').innerHTML = '<div class="empty-message">⚠️ خطأ في التحميل</div>');
+        }
+        
+        document.getElementById('uploadLevel').addEventListener('change', updateGradesUpload);
+        document.getElementById('uploadGrade').addEventListener('change', updateSubjectsUpload);
+        document.getElementById('uploadSubject').addEventListener('change', updateFoldersUpload);
+        
+        loadImages();
+        loadVideos();
+    </script>
+</body>
+</html>
