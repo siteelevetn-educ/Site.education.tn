@@ -1,1 +1,23 @@
+name: update-data
 
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update data.json
+        run: |
+          echo '{
+            "images": [],
+            "videos": {},
+            "files": {
+              "college/annee7/technologie/devoirs": ["pdf.2026.12.7.pdf"]
+            }
+          }' > fichiers/data.json
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update data.json"
+          file_pattern: "fichiers/data.json"
