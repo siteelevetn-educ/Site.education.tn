@@ -1,35 +1,5 @@
 {
-  "images": [
-    "DALL·E 2023-05-25 22.45.54 - .png",
-    "images (8).jpeg"
-  ],
-  "videos": {
-    "college/annee7/technologie/vidéos": [
-      "1036719011-aperçu.mp4"
-    ],
-    "college/annee7/anglais/vidéos": [],
-    "primaire/annee1/arabe/vidéos": [
-      "1739100593048.mp4"
-    ]
-  },
-  "files": {
-    "college/annee7/technologie/devoirs": [
-      "فرض تأليفي عدد 2026.12.7.pdf",
-      "فرض حالة خاصة 17.pdf",
-      "فرض مراقبة 2.7.2026.pdf",
-      "فرض مراقبة خاص 7.2026.pdf",
-      "فرض مراقبة عدد 2 b.7.2026.pdf"
-    ],
-    "national/concours/francais/qcm": [
-      "QCM 1.pdf",
-      "QCM 7-correction.pdf",
-      "QCM-Français-CAPES2008_CAPESTUNISIE.COM.pdf",
-      "QCM-Français-CAPES2014_capestunisie.com.pdf",
-      "QCM10-correction.pdf",
-      "QCM2 + correction.pdf",
-      "QCM5-correction.pdf",
-      "QCM6-correction.pdf",
-      "QCM8-correction.pdf"
-    ]
-  }
+  "images": [],
+  "videos": {},
+  "files": {}
 }
