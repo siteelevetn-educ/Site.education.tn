@@ -1,80 +1,33 @@
-name: تحديث data.json تلقائياً
+name: تحديث data.json
 
 on:
   push:
     paths:
-      - 'fichiers/**/*.pdf'
-      - 'fichiers/**/*.docx'
-      - 'fichiers/**/*.mp4'
-      - 'fichiers/**/*.webm'
-      - 'fichiers/images/*'
+      - 'fichiers/**'
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-  update-data:
+  update:
     runs-on: ubuntu-latest
     steps:
-      - name: تحميل المستودع
-        uses: actions/checkout@v4
-        
-      - name: إعداد Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          
+      - uses: actions/checkout@v4
+      
       - name: إنشاء data.json
         run: |
-          node -e "
-          const fs = require('fs');
-          const path = require('path');
-          
-          const result = {
-            images: [],
-            videos: {},
-            files: {}
-          };
-          
-          // جمع الصور
-          const imagesPath = 'fichiers/images';
-          if (fs.existsSync(imagesPath)) {
-            result.images = fs.readdirSync(imagesPath).filter(f => f.match(/\.(jpg|jpeg|png|gif|webp)$/i));
+          cat > fichiers/data.json << 'EOF'
+          {
+            "images": [],
+            "videos": {},
+            "files": {}
           }
-          
-          // دالة لمسح المجلدات
-          function scanDir(dir, prefix) {
-            if (!fs.existsSync(dir)) return;
-            const items = fs.readdirSync(dir);
-            for (const item of items) {
-              const fullPath = path.join(dir, item);
-              const stat = fs.statSync(fullPath);
-              if (stat.isDirectory()) {
-                scanDir(fullPath, prefix ? prefix + '/' + item : item);
-              } else if (item !== '.keep' && item !== 'data.json') {
-                const key = prefix;
-                if (item.match(/\.(mp4|webm)$/i)) {
-                  if (!result.videos[key]) result.videos[key] = [];
-                  result.videos[key].push(item);
-                } else if (item.match(/\.(pdf|docx)$/i)) {
-                  if (!result.files[key]) result.files[key] = [];
-                  result.files[key].push(item);
-                }
-              }
-            }
-          }
-          
-          // مسح جميع المستويات
-          scanDir('fichiers/primaire', 'primaire');
-          scanDir('fichiers/college', 'college');
-          scanDir('fichiers/lycee', 'lycee');
-          scanDir('fichiers/national', 'national');
-          
-          fs.writeFileSync('fichiers/data.json', JSON.stringify(result, null, 2));
-          "
+          EOF
           
       - name: حفظ التغييرات
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "🤖 تحديث تلقائي لـ data.json"
-          file_pattern: "fichiers/data.json"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add fichiers/data.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "تحديث data.json"
+          git push
