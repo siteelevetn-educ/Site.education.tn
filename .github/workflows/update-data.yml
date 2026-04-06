@@ -54,7 +54,8 @@ jobs:
                 scanDir(fullPath, prefix ? prefix + '/' + item : item);
               } else if (item !== '.keep' && item !== 'data.json') {
                 const key = prefix;
-                if (item.match(/\.(mp4|webm)$/i)) {
+                // قبول ملفات الفيديو وملفات الروابط (.link)
+                if (item.match(/\.(mp4|webm)$/i) || item.endsWith('.link')) {
                   if (!result.videos[key]) result.videos[key] = [];
                   result.videos[key].push(item);
                 } else if (item.match(/\.(pdf|docx)$/i)) {
@@ -72,7 +73,7 @@ jobs:
           scanDir('fichiers/national', 'national');
           
           fs.writeFileSync('fichiers/data.json', JSON.stringify(result, null, 2));
-          console.log('✅ data.json generated with:', JSON.stringify(result, null, 2));
+          console.log('✅ data.json generated');
           "
           
       - name: Commit and push
