@@ -5,7 +5,13 @@
     "imagea.png",
     "imageb.png"
   ],
-  "videos": {},
+  "videos": {
+    "primaire/annee1/eveil/videos": [
+      "Ernegie aérodynamique.mp4",
+      "Tidal Power 101.mp4",
+      "énergie hydro elect.mp4"
+    ]
+  },
   "files": {
     "college/annee7/technologie/devoirs": [
       "فرض مراقبة 2.7.2026.pdf"
