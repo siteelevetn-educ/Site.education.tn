@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '18'
           
-      - name: Generate data.json
+      - name: Generate data.json with teacher names
         run: |
           node -e "
           const fs = require('fs');
@@ -34,14 +34,64 @@ jobs:
           const result = {
             images: [],
             videos: {},
-            files: {}
+            files: {},
+            teachers: {}
           };
+          
+          // دالة لقراءة اسم الأستاذ من ملف .teacher
+          function getTeacherName(videoPath, videoName) {
+            const teacherFilePath = path.join(videoPath, videoName + '.teacher');
+            if (fs.existsSync(teacherFilePath)) {
+              try {
+                return fs.readFileSync(teacherFilePath, 'utf8').trim();
+              } catch(e) {
+                return null;
+              }
+            }
+            return null;
+          }
           
           // Collect images
           const imagesPath = 'fichiers/images';
           if (fs.existsSync(imagesPath)) {
             result.images = fs.readdirSync(imagesPath).filter(f => f.match(/\.(jpg|jpeg|png|gif|webp)$/i));
           }
+          
+          // دالة مساعدة لقراءة جميع ملفات .teacher
+          function loadAllTeacherFiles() {
+            const teachers = {};
+            const teacherFiles = [];
+            
+            function findTeacherFiles(dir) {
+              if (!fs.existsSync(dir)) return;
+              const items = fs.readdirSync(dir);
+              for (const item of items) {
+                const fullPath = path.join(dir, item);
+                const stat = fs.statSync(fullPath);
+                if (stat.isDirectory()) {
+                  findTeacherFiles(fullPath);
+                } else if (item.endsWith('.teacher')) {
+                  teacherFiles.push(fullPath);
+                }
+              }
+            }
+            
+            findTeacherFiles('fichiers');
+            
+            for (const tf of teacherFiles) {
+              const videoName = path.basename(tf).replace('.teacher', '');
+              const videoDir = path.dirname(tf);
+              const relativeDir = path.relative('fichiers', videoDir);
+              const teacherName = fs.readFileSync(tf, 'utf8').trim();
+              
+              if (!teachers[relativeDir]) teachers[relativeDir] = {};
+              teachers[relativeDir][videoName] = teacherName;
+            }
+            
+            return teachers;
+          }
+          
+          const teacherData = loadAllTeacherFiles();
           
           // Scan directories
           function scanDir(dir, prefix) {
@@ -52,12 +102,19 @@ jobs:
               const stat = fs.statSync(fullPath);
               if (stat.isDirectory()) {
                 scanDir(fullPath, prefix ? prefix + '/' + item : item);
-              } else if (item !== '.keep' && item !== 'data.json') {
+              } else if (item !== '.keep' && item !== 'data.json' && !item.endsWith('.teacher')) {
                 const key = prefix;
                 // قبول ملفات الفيديو وملفات الروابط (.link)
                 if (item.match(/\.(mp4|webm)$/i) || item.endsWith('.link')) {
                   if (!result.videos[key]) result.videos[key] = [];
-                  result.videos[key].push(item);
+                  
+                  // إضافة معلومات الفيديو مع اسم الأستاذ
+                  const videoInfo = {
+                    name: item,
+                    teacher: teacherData[key]?.[item.replace('.link', '')] || 'أستاذ'
+                  };
+                  result.videos[key].push(videoInfo);
+                  
                 } else if (item.match(/\.(pdf|docx)$/i)) {
                   if (!result.files[key]) result.files[key] = [];
                   result.files[key].push(item);
@@ -73,7 +130,7 @@ jobs:
           scanDir('fichiers/national', 'national');
           
           fs.writeFileSync('fichiers/data.json', JSON.stringify(result, null, 2));
-          console.log('✅ data.json generated');
+          console.log('✅ data.json generated with teacher names');
           "
           
       - name: Commit and push
@@ -81,5 +138,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add fichiers/data.json
-          git diff --staged --quiet || git commit -m "Update data.json"
+          git diff --staged --quiet || git commit -m "Update data.json with teacher names"
           git push
