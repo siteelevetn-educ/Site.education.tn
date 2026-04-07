@@ -7,13 +7,22 @@
   ],
   "videos": {
     "college/annee7/maths/videos": [
-      "الأعداد الصحيحة .link"
+      {
+        "name": "الأعداد الصحيحة .link",
+        "teacher": "أستاذ"
+      }
     ],
     "college/annee7/technologie/videos": [
-      "فيديو تعليمي.link"
+      {
+        "name": "فيديو تعليمي.link",
+        "teacher": "أستاذ"
+      }
     ],
     "college/annee9/anglais/videos": [
-      "فيديو تعليمي.link"
+      {
+        "name": "فيديو تعليمي.link",
+        "teacher": "أستاذ"
+      }
     ]
   },
   "files": {
@@ -53,5 +62,6 @@
       "capeslm-2004-2007.pdf",
       "📝 CORRECTION QCM1.pdf"
     ]
-  }
+  },
+  "teachers": {}
 }
