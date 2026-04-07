@@ -6,6 +6,12 @@
     "imageb.png"
   ],
   "videos": {
+    "primaire/annee1/arabe/cours": [
+      {
+        "name": "إختبار .link",
+        "teacher": "أستاذ"
+      }
+    ],
     "college/annee7/maths/videos": [
       {
         "name": "الأعداد الصحيحة .link",
