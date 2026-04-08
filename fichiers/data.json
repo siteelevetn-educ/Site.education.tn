@@ -43,6 +43,12 @@
         "name": "فيديو تعليمي.link",
         "teacher": "أستاذ"
       }
+    ],
+    "lycee/annee10/maths/videos": [
+      {
+        "name": "PGCD.link",
+        "teacher": "رياض"
+      }
     ]
   },
   "files": {
