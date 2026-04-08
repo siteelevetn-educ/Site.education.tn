@@ -48,6 +48,10 @@
     ],
     "national/concours/technique/qcm": [
       {
+        "name": "Convertisseur sta.link",
+        "teacher": "سامي سوداني"
+      },
+      {
         "name": "Transmission .link",
         "teacher": "سامي سوداني"
       }
