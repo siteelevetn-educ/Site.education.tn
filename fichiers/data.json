@@ -50,6 +50,10 @@
     ],
     "national/concours/physique/videos": [
       {
+        "name": "فيديو تعليمي.link",
+        "teacher": "سامي سوداني"
+      },
+      {
         "name": "كاباس.link",
         "teacher": "مهيب"
       }
