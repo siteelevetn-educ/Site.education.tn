@@ -105,9 +105,3 @@ jobs:
           git add fichiers/data.json
           git diff --staged --quiet || git commit -m "Update data.json with teacher names"
           git push
-
-          - name: Trigger Pages Rebuild
-  run: |
-    curl -L -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-    -H "Accept: api.github.com" \
-    https://api.github.com/repos/${{ github.repository }}/pages/builds
