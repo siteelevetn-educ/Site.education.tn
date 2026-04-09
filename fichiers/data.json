@@ -41,6 +41,12 @@
         "name": "PGCD.link",
         "teacher": "رياض"
       }
+    ],
+    "national/concours/technique/examens": [
+      {
+        "name": "Arduino .link",
+        "teacher": "سامي سوداني"
+      }
     ]
   },
   "files": {
