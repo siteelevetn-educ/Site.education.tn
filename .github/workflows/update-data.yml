@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 jobs:
   update:
@@ -37,13 +38,6 @@ jobs:
             files: {}
           };
           
-          // جمع الصور
-          const imagesPath = 'fichiers/images';
-          if (fs.existsSync(imagesPath)) {
-            result.images = fs.readdirSync(imagesPath).filter(f => f.match(/\.(jpg|jpeg|png|gif|webp)$/i));
-          }
-          
-          // دالة لقراءة اسم الأستاذ من ملف .teacher
           function getTeacherName(videoDir, videoName) {
             const teacherPath = path.join(videoDir, videoName.replace(/\.link$/, '') + '.teacher');
             if (fs.existsSync(teacherPath)) {
@@ -56,7 +50,11 @@ jobs:
             return null;
           }
           
-          // دالة لفحص المجلدات
+          const imagesPath = 'fichiers/images';
+          if (fs.existsSync(imagesPath)) {
+            result.images = fs.readdirSync(imagesPath).filter(f => f.match(/\.(jpg|jpeg|png|gif|webp)$/i));
+          }
+          
           function scanDir(dir, prefix) {
             if (!fs.existsSync(dir)) return;
             const items = fs.readdirSync(dir);
@@ -67,20 +65,14 @@ jobs:
                 scanDir(fullPath, prefix ? prefix + '/' + item : item);
               } else if (item !== '.keep' && item !== 'data.json' && !item.endsWith('.teacher')) {
                 const key = prefix;
-                // فيديوهات وروابط
                 if (item.match(/\.(mp4|webm)$/i) || item.endsWith('.link')) {
                   if (!result.videos[key]) result.videos[key] = [];
-                  
-                  // قراءة اسم الأستاذ من ملف .teacher
                   const teacherName = getTeacherName(dir, item);
-                  
                   result.videos[key].push({
                     name: item,
                     teacher: teacherName || 'أستاذ'
                   });
-                } 
-                // ملفات PDF و Word
-                else if (item.match(/\.(pdf|docx)$/i)) {
+                } else if (item.match(/\.(pdf|docx)$/i)) {
                   if (!result.files[key]) result.files[key] = [];
                   result.files[key].push(item);
                 }
@@ -88,7 +80,6 @@ jobs:
             }
           }
           
-          // فحص جميع المستويات
           scanDir('fichiers/primaire', 'primaire');
           scanDir('fichiers/college', 'college');
           scanDir('fichiers/lycee', 'lycee');
@@ -103,5 +94,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add fichiers/data.json
-          git diff --staged --quiet || git commit -m "Update data.json with teacher names"
+          git diff --staged --quiet || git commit -m "Update data.json"
           git push
+      
+      - name: Trigger Pages rebuild
+        uses: actions/deploy-pages@v4
