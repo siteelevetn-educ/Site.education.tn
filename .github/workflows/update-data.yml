@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: write
-  pages: write
+  id-token: write   # 🔑 أضف هذا السطر
 
 jobs:
   update:
@@ -96,6 +96,3 @@ jobs:
           git add fichiers/data.json
           git diff --staged --quiet || git commit -m "Update data.json"
           git push
-      
-      - name: Trigger Pages rebuild
-        uses: actions/deploy-pages@v4
