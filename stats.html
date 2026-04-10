@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الإحصائيات - منصة تعليمية تونس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .stats-container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 30px; text-align: center; font-size: 32px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .stat-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
+        .stat-card h2 { color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px solid #fe2c55; display: inline-block; }
+        .stat-number { font-size: 48px; font-weight: bold; color: #fe2c55; text-align: center; margin: 20px 0; }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .stat-label { font-weight: 600; color: #2c3e50; }
+        .stat-value { color: #667eea; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
+        th { background: #667eea; color: white; border-radius: 10px; }
+        td { color: #2c3e50; }
+        .refresh-btn { background: #fe2c55; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; margin-bottom: 20px; font-size: 16px; }
+        .refresh-btn:hover { background: #e01e45; }
+        .footer { text-align: center; margin-top: 30px; color: white; }
+    </style>
+</head>
+<body>
+    <div class="stats-container">
+        <h1>📊 لوحة تحكم الإحصائيات</h1>
+        <button class="refresh-btn" onclick="loadStats()">🔄 تحديث الإحصائيات</button>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h2>📈 إحصائيات سريعة</h2>
+                <div id="quickStats"></div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>📹 أكثر الفيديوهات مشاهدة</h2>
+                <div id="topVideos"></div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>📚 أكثر الأقسام زيارة</h2>
+                <div id="topSections"></div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <h2>📅 النشاطات الأخيرة</h2>
+            <div id="recentActivities"></div>
+        </div>
+        
+        <div class="stat-card">
+            <h2>📁 أكثر الملفات تحميلاً</h2>
+            <div id="topDownloads"></div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2026 منصة تعليمية - تونس - جميع الحقوق محفوظة</p>
+    </div>
+    
+    <script>
+        const REPO_OWNER = 'siteelevetn-educ';
+        const REPO_NAME = 'Site.education.tn';
+        const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/`;
+        
+        let analyticsData = { lastActivities: [] };
+        
+        async function loadStats() {
+            document.getElementById('quickStats').innerHTML = '<div class="stat-number">⏳ جاري التحميل...</div>';
+            
+            try {
+                const response = await fetch(`${RAW_URL}analytics/data.json?t=${Date.now()}`);
+                if (response.ok) {
+                    analyticsData = await response.json();
+                    displayStats();
+                } else {
+                    document.getElementById('quickStats').innerHTML = '<div class="stat-number">📭 لا توجد بيانات بعد</div>';
+                }
+            } catch(e) {
+                document.getElementById('quickStats').innerHTML = '<div class="stat-number">⚠️ خطأ في التحميل</div>';
+            }
+        }
+        
+        function displayStats() {
+            // إحصائيات سريعة
+            let totalViews = 0;
+            let totalVideos = 0;
+            let totalDownloads = 0;
+            
+            if (analyticsData.videoPlays) {
+                for (let key in analyticsData.videoPlays) {
+                    totalVideos += analyticsData.videoPlays[key];
+                }
+            }
+            if (analyticsData.fileDownloads) {
+                for (let key in analyticsData.fileDownloads) {
+                    totalDownloads += analyticsData.fileDownloads[key];
+                }
+            }
+            if (analyticsData.pageViews_page_view) {
+                for (let key in analyticsData.pageViews_page_view) {
+                    totalViews += analyticsData.pageViews_page_view[key];
+                }
+            }
+            
+            document.getElementById('quickStats').innerHTML = `
+                <div class="stat-row"><span class="stat-label">📄 إجمالي مشاهدات الصفحات:</span><span class="stat-value">${totalViews}</span></div>
+                <div class="stat-row"><span class="stat-label">🎬 إجمالي مشاهدات الفيديوهات:</span><span class="stat-value">${totalVideos}</span></div>
+                <div class="stat-row"><span class="stat-label">📥 إجمالي مرات التحميل:</span><span class="stat-value">${totalDownloads}</span></div>
+                <div class="stat-row"><span class="stat-label">📅 آخر تحديث:</span><span class="stat-value">${new Date().toLocaleString()}</span></div>
+            `;
+            
+            // أكثر الفيديوهات مشاهدة
+            let topVideosHtml = '<table><tr><th>الفيديو</th><th>عدد المشاهدات</th></tr>';
+            if (analyticsData.videoPlays) {
+                const sorted = Object.entries(analyticsData.videoPlays).sort((a,b) => b[1] - a[1]).slice(0, 10);
+                for (const [video, count] of sorted) {
+                    topVideosHtml += `<tr><td>${video.substring(0, 50)}</td><td>${count}</td></tr>`;
+                }
+            }
+            topVideosHtml += '</table>';
+            document.getElementById('topVideos').innerHTML = topVideosHtml;
+            
+            // أكثر الأقسام زيارة
+            let topSectionsHtml = '<table><tr><th>القسم</th><th>عدد الزيارات</th></tr>';
+            if (analyticsData.sectionClicks) {
+                const sorted = Object.entries(analyticsData.sectionClicks).sort((a,b) => b[1] - a[1]).slice(0, 10);
+                for (const [section, count] of sorted) {
+                    topSectionsHtml += `<tr><td>${section}</td><td>${count}</td></tr>`;
+                }
+            }
+            topSectionsHtml += '</table>';
+            document.getElementById('topSections').innerHTML = topSectionsHtml;
+            
+            // النشاطات الأخيرة
+            let activitiesHtml = '<table><tr><th>الوقت</th><th>النشاط</th><th>التفاصيل</th></tr>';
+            if (analyticsData.lastActivities && analyticsData.lastActivities.length > 0) {
+                for (const activity of analyticsData.lastActivities.slice(0, 30)) {
+                    activitiesHtml += `
+                        <tr>
+                            <td>${new Date(activity.time).toLocaleString()}</td>
+                            <td>${activity.category} - ${activity.action}</td>
+                            <td>${activity.label}</td>
+                        </tr>
+                    `;
+                }
+            } else {
+                activitiesHtml += '<tr><td colspan="3">لا توجد نشاطات بعد</td></tr>';
+            }
+            activitiesHtml += '</table>';
+            document.getElementById('recentActivities').innerHTML = activitiesHtml;
+            
+            // أكثر الملفات تحميلاً
+            let topDownloadsHtml = '<table><tr><th>الملف</th><th>عدد مرات التحميل</th></tr>';
+            if (analyticsData.fileDownloads) {
+                const sorted = Object.entries(analyticsData.fileDownloads).sort((a,b) => b[1] - a[1]).slice(0, 10);
+                for (const [file, count] of sorted) {
+                    topDownloadsHtml += `<tr><td>${file.substring(0, 50)}</td><td>${count}</td></tr>`;
+                }
+            }
+            topDownloadsHtml += '</table>';
+            document.getElementById('topDownloads').innerHTML = topDownloadsHtml;
+        }
+        
+        loadStats();
+        // تحديث تلقائي كل 30 ثانية
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
