@@ -14,12 +14,36 @@
       {
         "name": "المرادفات.link",
         "teacher": "صغرون أكاديمي"
+      },
+      {
+        "name": "تواصل شفوي- ثلاثي 3.link",
+        "teacher": "سيرين كواس"
+      }
+    ],
+    "primaire/annee1/eveil/videos": [
+      {
+        "name": "إيقاض ثلاثي 2.link",
+        "teacher": "سيرين كواس"
       }
     ],
     "primaire/annee1/maths/videos": [
       {
         "name": "الجمع.link",
         "teacher": "قناة التقدم"
+      },
+      {
+        "name": "حساب ذهني ثلاثي2.link",
+        "teacher": "سيرين كواس"
+      },
+      {
+        "name": "حساب ذهني ثلاثي3.link",
+        "teacher": "سيرين كواس"
+      }
+    ],
+    "primaire/annee2/eveil/videos": [
+      {
+        "name": "إيقاض سنة ثانية ثلاثي 2.link",
+        "teacher": "سيرين كواس"
       }
     ],
     "college/annee7/maths/videos": [
