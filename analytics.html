@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إحصائيات المنصة</title>
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background: #1a1a2e; color: white; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
+        th { background: #fe2c55; }
+        .refresh-btn { background: #fe2c55; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; }
+        .number { font-size: 24px; color: #fe2c55; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 إحصائيات المنصة (جميع المستخدمين)</h1>
+        <button class="refresh-btn" onclick="loadStats()">🔄 تحديث</button>
+        
+        <div class="card">
+            <h2>📈 إحصائيات سريعة</h2>
+            <div id="quickStats"></div>
+        </div>
+        
+        <div class="card">
+            <h2>🎬 أكثر الفيديوهات مشاهدة</h2>
+            <div id="topVideos"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📅 النشاطات الأخيرة</h2>
+            <div id="recentActivities"></div>
+        </div>
+    </div>
+    
+    <script>
+        const REPO_OWNER = 'siteelevetn-educ';
+        const REPO_NAME = 'Site.education.tn';
+        const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/`;
+        
+        // دالة فك تشفير Base64 إلى نص عربي
+        function decodeBase64(str) {
+            try {
+                return decodeURIComponent(escape(atob(str)));
+            } catch(e) {
+                return str;
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch(`${RAW_URL}analytique/events.json?t=${Date.now()}`);
+                const events = await response.json();
+                displayStats(events);
+            } catch(e) {
+                document.getElementById('quickStats').innerHTML = '<p>⚠️ لا توجد إحصائيات بعد</p>';
+            }
+        }
+        
+        function displayStats(events) {
+            // فك تشفير جميع الأحداث
+            const decodedEvents = events.map(event => ({
+                category: decodeBase64(event.category),
+                action: decodeBase64(event.action),
+                label: decodeBase64(event.label),
+                timestamp: event.timestamp,
+                userAgent: event.userAgent,
+                url: event.url
+            }));
+            
+            // إحصائيات سريعة
+            const totalEvents = decodedEvents.length;
+            const uniqueUsers = new Set(decodedEvents.map(e => e.userAgent)).size;
+            const lastEvent = decodedEvents[0] ? new Date(decodedEvents[0].timestamp).toLocaleString() : 'لا يوجد';
+            
+            document.getElementById('quickStats').innerHTML = `
+                <p>📊 عدد الأحداث المسجلة: ${totalEvents}</p>
+                <p>👥 عدد الزوار التقريبي: ${uniqueUsers}</p>
+                <p>📅 آخر نشاط: ${lastEvent}</p>
+            `;
+            
+            // أكثر الفيديوهات مشاهدة
+            const videoPlays = decodedEvents.filter(e => e.category === 'video');
+            const videoCount = {};
+            videoPlays.forEach(v => { videoCount[v.label] = (videoCount[v.label] || 0) + 1; });
+            const topVideos = Object.entries(videoCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            
+            let topVideosHtml = '<table><th>الفيديو</th><th>عدد المشاهدات</th></tr>';
+            topVideos.forEach(([v, c]) => {
+                topVideosHtml += `<tr><td style="text-align:right">${v.substring(0, 60)}</td><td>${c}</td></tr>`;
+            });
+            document.getElementById('topVideos').innerHTML = topVideosHtml + '</table>';
+            
+            // النشاطات الأخيرة
+            let activitiesHtml = '<table><th>الوقت</th><th>النشاط</th><th>التفاصيل</th></tr>';
+            decodedEvents.slice(0, 30).forEach(e => {
+                activitiesHtml += `
+                    <tr>
+                        <td>${new Date(e.timestamp).toLocaleString()}</td>
+                        <td>${e.category} - ${e.action}</td>
+                        <td style="text-align:right">${e.label.substring(0, 80)}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('recentActivities').innerHTML = activitiesHtml + '</table>';
+        }
+        
+        loadStats();
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
