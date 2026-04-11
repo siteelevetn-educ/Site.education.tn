@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إحصائيات المنصة - جميع المستخدمين</title>
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background: #1a1a2e; color: white; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
+        th { background: #fe2c55; }
+        .stat-number { font-size: 36px; color: #fe2c55; }
+        .refresh-btn { background: #fe2c55; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 إحصائيات المنصة (جميع المستخدمين)</h1>
+        <button class="refresh-btn" onclick="loadStats()">🔄 تحديث</button>
+        
+        <div class="card">
+            <h2>📈 إحصائيات سريعة</h2>
+            <div id="quickStats"></div>
+        </div>
+        
+        <div class="card">
+            <h2>🎬 أكثر الفيديوهات مشاهدة</h2>
+            <div id="topVideos"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📅 النشاطات الأخيرة</h2>
+            <div id="recentActivities"></div>
+        </div>
+    </div>
+    
+    <script>
+        const REPO_OWNER = 'siteelevetn-educ';
+        const REPO_NAME = 'Site.education.tn';
+        const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/`;
+        
+        async function loadStats() {
+            try {
+                const response = await fetch(`${RAW_URL}analytics/events.json?t=${Date.now()}`);
+                const events = await response.json();
+                displayStats(events);
+            } catch(e) {
+                document.getElementById('quickStats').innerHTML = '<p>⚠️ لا توجد إحصائيات بعد</p>';
+            }
+        }
+        
+        function displayStats(events) {
+            // إحصائيات سريعة
+            document.getElementById('quickStats').innerHTML = `
+                <p>📊 عدد الأحداث المسجلة: ${events.length}</p>
+                <p>👥 عدد الزوار: ${new Set(events.map(e => e.userAgent)).size}</p>
+                <p>📅 آخر نشاط: ${events[0] ? new Date(events[0].timestamp).toLocaleString() : 'لا يوجد'}</p>
+            `;
+            
+            // أكثر الفيديوهات مشاهدة
+            const videoPlays = events.filter(e => e.category === 'video');
+            const videoCount = {};
+            videoPlays.forEach(v => { videoCount[v.label] = (videoCount[v.label] || 0) + 1; });
+            const topVideos = Object.entries(videoCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            
+            let topVideosHtml = '<table><th>الفيديو</th><th>عدد المشاهدات</th></tr>';
+            topVideos.forEach(([v, c]) => {
+                topVideosHtml += `<tr><td>${v.substring(0, 50)}</td><td>${c}</td></tr>`;
+            });
+            document.getElementById('topVideos').innerHTML = topVideosHtml + '</table>';
+            
+            // النشاطات الأخيرة
+            let activitiesHtml = '<table><th>الوقت</th><th>النشاط</th><th>التفاصيل</th></tr>';
+            events.slice(0, 30).forEach(e => {
+                activitiesHtml += `
+                    <tr>
+                        <td>${new Date(e.timestamp).toLocaleString()}</td>
+                        <td>${e.category} - ${e.action}</td>
+                        <td>${e.label}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('recentActivities').innerHTML = activitiesHtml + '</table>';
+        }
+        
+        loadStats();
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
